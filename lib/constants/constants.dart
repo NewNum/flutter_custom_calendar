@@ -19,9 +19,7 @@ class CalendarConstants {
   static const int MODE_SHOW_WEEK_AND_MONTH = 3; //支持两种视图，先显示周视图
   static const int MODE_SHOW_MONTH_AND_WEEK = 4; //支持两种视图，先显示月视图
 
-  /**
-   * 一周七天
-   */
+  /// 一周七天
   static const List<String> WEEK_LIST = [
     "周一",
     "周二",

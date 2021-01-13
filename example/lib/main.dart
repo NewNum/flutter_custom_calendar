@@ -42,17 +42,18 @@ class _MyHomePageState extends State<MyHomePage> {
   HashSet<DateModel> _selectedModels = new HashSet();
 
   GlobalKey<CalendarContainerState> _globalKey = new GlobalKey();
+
   @override
   void initState() {
-    _selectedDate.add(DateTime.now());
+    var dateTime = DateTime.now();
     controller = new CalendarController(
-        minYear: 2019,
-        minYearMonth: 1,
+        minYear: dateTime.year,
+        minYearMonth: dateTime.month,
         maxYear: 2021,
         maxYearMonth: 12,
-        showMode: CalendarConstants.MODE_SHOW_WEEK_AND_MONTH,
+        showMode: CalendarConstants.MODE_SHOW_ONLY_MONTH,
         selectedDateTimeList: _selectedDate,
-        selectMode: CalendarSelectedMode.singleSelect)
+        selectMode: CalendarSelectedMode.mutltiStartToEndSelect)
       ..addOnCalendarSelectListener((dateModel) {
         _selectedModels.add(dateModel);
         setState(() {
@@ -60,7 +61,8 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       })
       ..addOnCalendarUnSelectListener((dateModel) {
-        LogUtil.log(TAG: '_selectedModels', message: _selectedModels.toString());
+        LogUtil.log(
+            TAG: '_selectedModels', message: _selectedModels.toString());
         LogUtil.log(TAG: 'dateModel', message: dateModel.toString());
         if (_selectedModels.contains(dateModel)) {
           _selectedModels.remove(dateModel);
@@ -121,95 +123,19 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isMonthSelected = false;
 
   String _selectDate = '';
+
   @override
   Widget build(BuildContext context) {
+    var dateTime = DateTime.now();
+    var dateTime2 = DateTime(dateTime.year,dateTime.month+3,32);//todo 计算日期
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: CupertinoScrollbar(
-        child: CustomScrollView(
-          slivers: <Widget>[
-            _topButtons(),
-            _topMonths(),
-            SliverToBoxAdapter(
-              child: calendar,
-            ),
-            SliverToBoxAdapter(
-              child: Container(
-                child: Text(
-                  ' $_selectDate ',
-                  style: TextStyle(color: Theme.of(context).focusColor),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _topButtons() {
-    return SliverToBoxAdapter(
-      child: Wrap(
-        direction: Axis.vertical,
-        crossAxisAlignment: WrapCrossAlignment.start,
-        children: <Widget>[
-          Text('请选择mode'),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: <Widget>[
-              FlatButton(
-                child: Text(
-                  '单选',
-                  style: TextStyle(color: Colors.white),
-                ),
-                onPressed: () {
-                  setState(() {
-                    controller.calendarConfiguration.selectMode =
-                        CalendarSelectedMode.singleSelect;
-                  });
-                },
-                color: controller.calendarConfiguration.selectMode ==
-                        CalendarSelectedMode.singleSelect
-                    ? Colors.teal
-                    : Colors.black38,
-              ),
-              FlatButton(
-                child: Text(
-                  '多选',
-                  style: TextStyle(color: Colors.white),
-                ),
-                onPressed: () {
-                  setState(() {
-                    controller.calendarConfiguration.selectMode =
-                        CalendarSelectedMode.multiSelect;
-                  });
-                },
-                color: controller.calendarConfiguration.selectMode ==
-                        CalendarSelectedMode.multiSelect
-                    ? Colors.teal
-                    : Colors.black38,
-              ),
-              FlatButton(
-                child: Text(
-                  '多选 选择开始和结束',
-                  style: TextStyle(color: Colors.white),
-                ),
-                onPressed: () {
-                  setState(() {
-                    controller.calendarConfiguration.selectMode =
-                        CalendarSelectedMode.mutltiStartToEndSelect;
-                  });
-                },
-                color: controller.calendarConfiguration.selectMode ==
-                        CalendarSelectedMode.mutltiStartToEndSelect
-                    ? Colors.teal
-                    : Colors.black38,
-              ),
-            ],
-          ),
+      body: Column(
+        children: [
+          calendar,
+          Text(dateTime2.toString())
         ],
       ),
     );
