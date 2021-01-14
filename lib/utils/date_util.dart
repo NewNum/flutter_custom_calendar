@@ -96,10 +96,9 @@ class DateUtil {
     return (duration.inDays / 7).toInt() + 1;
   }
 
-  /**
-   * 本月第一天，是那一周的第几天,从1开始
-   * @return 获取日期所在月视图对应的起始偏移量 the start diff with MonthView
-   */
+  /// 本月第一天，是那一周的第几天,从1开始
+  /// @return 获取日期所在月视图对应的起始偏移量 the start diff with MonthView
+
   static int getIndexOfFirstDayInMonth(DateTime dateTime, {int offset = 0}) {
     DateTime firstDayOfMonth = new DateTime(dateTime.year, dateTime.month, 1);
 
@@ -144,14 +143,15 @@ class DateUtil {
         }
         //这个上一月的几天
         temp = firstDayOfMonth.subtract(Duration(days: mPreDiff - i - 1));
-
         dateModel = DateModel.fromDateTime(temp);
+        dateModel.day = 0;
         dateModel.isCurrentMonth = false;
       } else if (i >= monthDayCount + (mPreDiff - 1)) {
         //这是下一月的几天
         temp = lastDayOfMonth
             .add(Duration(days: i - mPreDiff - monthDayCount + 2));
         dateModel = DateModel.fromDateTime(temp);
+        dateModel.day = 0;
         dateModel.isCurrentMonth = false;
       } else {
         //这个月的

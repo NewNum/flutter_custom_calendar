@@ -63,9 +63,6 @@ class _MonthViewPagerState extends State<MonthViewPager>
 
     return PageView.builder(
       onPageChanged: (position) {
-        if (calendarProvider.expandStatus.value == false) {
-          return;
-        }
         //月份的变化
         DateModel dateModel = configuration.monthList[position];
         configuration.monthChangeListeners.forEach((listener) {

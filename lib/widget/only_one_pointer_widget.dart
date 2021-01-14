@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 
-/**
- * 单点触摸的方案：https://xbuba.com/questions/51712287
- */
+/// 单点触摸的方案：https://xbuba.com/questions/51712287
 class OnlyOnePointerRecognizer extends OneSequenceGestureRecognizer {
   int _p = 0;
 

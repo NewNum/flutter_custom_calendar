@@ -4,9 +4,8 @@ import 'package:flutter_custom_calendar/style/style.dart';
 
 import 'base_day_view.dart';
 
-/**
- * 默认的利用组合widget的方式构造item
- */
+/// 默认的利用组合widget的方式构造item
+
 //class DefaultCombineDayWidget extends StatelessWidget {
 //  DateModel dateModel;
 //

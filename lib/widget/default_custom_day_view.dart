@@ -4,10 +4,7 @@ import 'package:flutter_custom_calendar/style/style.dart';
 
 import 'base_day_view.dart';
 
-/**
- * 这里定义成一个StatelessWidget，状态是外部的父控件传进来参数控制就行，自己不弄state类
- */
-
+/// 这里定义成一个StatelessWidget，状态是外部的父控件传进来参数控制就行，自己不弄state类
 class DefaultCustomDayWidget extends BaseCustomDayWidget {
   const DefaultCustomDayWidget(DateModel dateModel) : super(dateModel);
 
@@ -67,9 +64,7 @@ class DefaultCustomDayWidget extends BaseCustomDayWidget {
 //  }
 //}
 
-/**
- * 默认的样式
- */
+/// 默认的样式
 void defaultDrawNormal(DateModel dateModel, Canvas canvas, Size size) {
   //顶部的文字
   TextPainter dayTextPainter = new TextPainter()
@@ -94,9 +89,7 @@ void defaultDrawNormal(DateModel dateModel, Canvas canvas, Size size) {
   lunarTextPainter.paint(canvas, Offset(0, size.height / 2));
 }
 
-/**
- * 被选中的样式
- */
+/// 被选中的样式
 void defaultDrawSelected(DateModel dateModel, Canvas canvas, Size size) {
   //绘制背景
   Paint backGroundPaint = new Paint()

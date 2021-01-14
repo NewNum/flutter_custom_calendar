@@ -4,9 +4,8 @@ import 'package:flutter_custom_calendar/flutter_custom_calendar.dart';
 
 import '../controller.dart';
 
-/**
- * 通过canvas自定义item，只需实现相关的方法就可以
- */
+/// 通过canvas自定义item，只需实现相关的方法就可以
+
 abstract class BaseCustomDayWidget extends StatelessWidget {
   final DateModel dateModel;
 

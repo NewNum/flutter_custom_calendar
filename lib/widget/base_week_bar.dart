@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-/**
- * 顶部的固定的周显示
- */
+/// 顶部的固定的周显示
+
 abstract class BaseWeekBar extends StatelessWidget {
   const BaseWeekBar({Key key}) : super(key: key);
 
