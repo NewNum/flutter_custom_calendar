@@ -63,6 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
       selectedDateTimeList: _selectedDate,
       offset: 1,
       selectMode: CalendarSelectedMode.singleSelect,
+      onItemClick: (_,__,___,____){}
     )
       ..addMonthChangeListener((year, month) {
         context.read<DateViewModel>().setDate(year, month);

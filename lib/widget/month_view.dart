@@ -201,16 +201,20 @@ class ItemContainerState extends State<ItemContainer> {
     }
   }
 
-  void _notifiCationUnCalendarSelect(DateModel element) {
+  void notifiCationUnCalendarSelect(DateModel element) {
     if (configuration.unCalendarSelect != null) {
       configuration.unCalendarSelect(element);
     }
   }
 
-  void _notifiCationCalendarSelect(DateModel element) {
+  void notifiCationCalendarSelect(DateModel element) {
     if (configuration.calendarSelect != null) {
       configuration.calendarSelect(element);
     }
+  }
+
+  void updateWidget() {
+    setState(() {});
   }
 
   @override
@@ -222,131 +226,12 @@ class ItemContainerState extends State<ItemContainer> {
     return GestureDetector(
       //点击整个item都会触发事件
       behavior: HitTestBehavior.opaque,
-      onTap: () {
-        if (!configuration.itemCanClick(dateModel)) {
-          return;
-        }
-        LogUtil.log(
-            TAG: this.runtimeType,
-            message: "GestureDetector onTap: $dateModel}");
-
-        //范围外不可点击
-        if (!dateModel.isInRange) {
-          return;
-        }
-        print('244 周视图的变化: $dateModel');
-        calendarProvider.lastClickDateModel = dateModel;
-
-        switch (configuration.selectMode) {
-          //简单多选
-          case CalendarSelectedMode.multiSelect:
-            if (calendarProvider.selectedDateList.contains(dateModel)) {
-              calendarProvider.selectedDateList.remove(dateModel);
-              _notifiCationUnCalendarSelect(dateModel);
-            } else {
-              //多选，判断是否超过限制，超过范围
-              if (calendarProvider.selectedDateList.length ==
-                  configuration.maxMultiSelectCount) {
-                if (configuration.multiSelectOutOfSize != null) {
-                  configuration.multiSelectOutOfSize();
-                }
-                return;
-              }
-              dateModel.isSelected = !dateModel.isSelected;
-              calendarProvider.selectedDateList.add(dateModel);
-            }
-
-            //多选也可以弄这些单选的代码
-            calendarProvider.selectDateModel = dateModel;
-            break;
-
-          /// 单选
-          case CalendarSelectedMode.singleSelect:
-
-            /// 加入已经选择了多个 则进行取消操作
-            calendarProvider.selectedDateList.forEach((element) {
-              element.isSelected = false;
-              _notifiCationUnCalendarSelect(element);
-            });
-            calendarProvider.selectedDateList.clear();
-
-            //单选需要刷新上一个item
-            if (calendarProvider.lastClickItemState != this) {
-              calendarProvider.lastClickItemState?.refreshItem(false);
-              calendarProvider.lastClickItemState = this;
-            }
-            if (calendarProvider.selectedDateList.contains(dateModel)) {
-              // 如果已经选择就执行取消
-              _notifiCationUnCalendarSelect(calendarProvider.selectDateModel);
-              dateModel.isSelected = false;
-              calendarProvider.selectedDateList.clear();
-              calendarProvider.selectDateModel = null;
-              _notifiCationUnCalendarSelect(dateModel);
-            } else {
-              _notifiCationUnCalendarSelect(calendarProvider.selectDateModel);
-              dateModel.isSelected = true;
-              calendarProvider.selectDateModel = dateModel;
-              _notifiCationCalendarSelect(dateModel);
-            }
-
-            setState(() {});
-
-            break;
-
-          /// 选择范围
-          case CalendarSelectedMode.mutltiStartToEndSelect:
-            if (calendarProvider.selectedDateList.length == 0) {
-              calendarProvider.selectedDateList.add(dateModel);
-            } else if (calendarProvider.selectedDateList.length == 1) {
-              DateModel d2 = calendarProvider.selectedDateList.first;
-              if (calendarProvider.selectedDateList.contains(dateModel)) {
-                /// 选择同一个第二次则进行取消
-                dateModel.isSelected = false;
-                calendarProvider.selectDateModel = null;
-                calendarProvider.selectedDateList.clear();
-                _notifiCationUnCalendarSelect(dateModel);
-                setState(() {});
-                return;
-              }
-              DateTime t1, t2;
-              if (d2.getDateTime().isAfter(dateModel.getDateTime())) {
-                t2 = d2.getDateTime();
-                t1 = dateModel.getDateTime();
-              } else {
-                t1 = d2.getDateTime();
-                t2 = dateModel.getDateTime();
-              }
-              for (; t1.isBefore(t2);) {
-                calendarProvider.selectedDateList
-                    .add(DateModel.fromDateTime(t1));
-                t1 = t1.add(Duration(days: 1));
-              }
-              calendarProvider.selectedDateList.add(DateModel.fromDateTime(t1));
-            } else {
-              /// 加入已经选择了多个 则进行取消操作
-              calendarProvider.selectedDateList.forEach((element) {
-                element.isSelected = false;
-                _notifiCationUnCalendarSelect(element);
-              });
-
-              /// 清空删除的 数组
-              calendarProvider.selectedDateList.clear();
-              setState(() {});
-            }
-            this.calendarProvider.generation.value++;
-            break;
-        }
-
-        /// 所有数组操作完了 进行通知分发
-        if (configuration.calendarSelect != null &&
-            calendarProvider.selectedDateList.length > 0) {
-          calendarProvider.selectedDateList.forEach((element) {
-            _notifiCationCalendarSelect(element);
-          });
-        }
-
-        refreshItem(!this.dateModel.isSelected);
-      },
+      onTap: () => configuration.onItemClick.call(
+        this,
+        configuration,
+        dateModel,
+        calendarProvider,
+      ),
       child: configuration.dayWidgetBuilder(dateModel),
     );
   }

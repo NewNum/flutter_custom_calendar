@@ -49,7 +49,7 @@ class CalendarConfiguration {
   DayWidgetBuilder dayWidgetBuilder; //创建日历item
   WeekBarItemWidgetBuilder weekBarItemWidgetBuilder; //创建顶部的weekbar
   CanClick itemCanClick; //控制item是否可点击
-
+  OnItemClick onItemClick;//item点击事件处理
   /// 监听变化
   //各种事件回调
   OnCalendarSelect calendarSelect; //点击选择事件
@@ -98,6 +98,7 @@ class CalendarConfiguration {
     this.padding,
     this.margin,
     this.offset = 0,
+    this.onItemClick
   });
 
   @override
