@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'calendar_provider.dart';
 import 'configuration.dart';
@@ -15,7 +13,7 @@ import 'model/date_model.dart';
 
 class CalendarController {
   static const Set<DateTime> EMPTY_SET = {};
-  static const Map<DateModel, Object> EMPTY_MAP = {};
+  static const Map<DateModel, dynamic> EMPTY_MAP = {};
   static const Duration DEFAULT_DURATION = const Duration(milliseconds: 500);
 
   CalendarConfiguration calendarConfiguration;
@@ -24,11 +22,10 @@ class CalendarController {
 
   /// 下面的信息不是配置的
   List<DateModel> monthList = new List(); //月份list
-  List<DateModel> weekList = new List(); //星期list
   PageController monthController; //月份的controller
-  PageController weekController; //星期的controller
 
   CalendarController({
+    CalendarSelectedMode selectMode = CalendarSelectedMode.singleSelect,
     int minYear = 1971,
     int maxYear = 2055,
     int minYearMonth = 1,
@@ -44,7 +41,7 @@ class CalendarController {
     Set<DateTime> selectedDateTimeList = EMPTY_SET, //多选模式下，默认选中的item列表
     DateModel selectDateModel, //单选模式下，默认选中的item
     int maxMultiSelectCount = 9999,
-    Map<DateModel, Object> extraDataMap = EMPTY_MAP,
+    Map<DateModel, dynamic> extraDataMap = EMPTY_MAP,
     int offset = 0, // 首日偏移量
   }) {
     assert(offset >= 0 && offset <= 6);
@@ -57,6 +54,7 @@ class CalendarController {
       nowMonth = DateTime.now().month;
     }
     calendarConfiguration = CalendarConfiguration(
+        selectMode: selectMode,
         minYear: minYear,
         maxYear: maxYear,
         maxYearMonth: maxYearMonth,
@@ -74,15 +72,9 @@ class CalendarController {
         selectDateModel: selectDateModel,
         offset: offset);
 
-    calendarConfiguration.defaultSelectedDateList = new HashSet<DateModel>();
-    calendarConfiguration.defaultSelectedDateList
-        .addAll(selectedDateTimeList.map((dateTime) {
-      return DateModel.fromDateTime(dateTime);
-    }).toSet());
     //将默认选中的数据，放到provider中
     calendarProvider.selectDateModel = selectDateModel;
-    calendarProvider.selectedDateList =
-        calendarConfiguration.defaultSelectedDateList;
+
     calendarConfiguration.minSelectDate = DateModel.fromDateTime(DateTime(
         calendarConfiguration.minSelectYear,
         calendarConfiguration.minSelectMonth,
@@ -145,14 +137,7 @@ class CalendarController {
             "初始化月份视图的信息:一共有${monthList.length}个月，initialPage为$nowMonthIndex");
 
     calendarConfiguration.monthList = monthList;
-    calendarConfiguration.weekList = weekList;
     calendarConfiguration.monthController = monthController;
-    calendarConfiguration.weekController = weekController;
-  }
-
-  //周视图切换
-  void addWeekChangeListener(OnWeekChange listener) {
-    this.calendarConfiguration.weekChangeListeners.add(listener);
   }
 
   //月份切换监听
@@ -170,6 +155,11 @@ class CalendarController {
     this.calendarConfiguration.unCalendarSelect = listener;
   }
 
+  //多选结束监听
+  void addOnMultiSelectListener(OnMultiSelect listener) {
+    this.calendarConfiguration.onMultiSelect = listener;
+  }
+
   //多选超出指定范围
   void addOnMultiSelectOutOfRangeListener(OnMultiSelectOutOfRange listener) {
     this.calendarConfiguration.multiSelectOutOfRange = listener;
@@ -183,13 +173,6 @@ class CalendarController {
   //可以动态修改extraDataMap
   void changeExtraData(Map<DateModel, Object> newMap) {
     this.calendarConfiguration.extraDataMap = newMap;
-    this.calendarProvider.generation.value++;
-  }
-
-  //可以动态修改默认选中的item。
-  void changeDefaultSelectedDateList(Set<DateModel> defaultSelectedDateList) {
-    this.calendarConfiguration.defaultSelectedDateList =
-        defaultSelectedDateList;
     this.calendarProvider.generation.value++;
   }
 
@@ -353,11 +336,6 @@ class CalendarController {
     return monthList[monthController.page.toInt()];
   }
 
-  //获取被选中的日期,多选
-  Set<DateModel> getMultiSelectCalendar() {
-    return calendarProvider.selectedDateList;
-  }
-
   //获取被选中的日期，单选
   DateModel getSingleSelectCalendar() {
     return calendarProvider.selectDateModel;
@@ -366,7 +344,6 @@ class CalendarController {
   //清除数据
   void clearData() {
     monthList.clear();
-    weekList.clear();
     calendarProvider.clearData();
     calendarConfiguration.weekChangeListeners = null;
     calendarConfiguration.monthChangeListeners = null;
@@ -413,6 +390,9 @@ typedef void OnCalendarSelect(DateModel dateModel);
 
 /// 取消选择
 typedef void OnCalendarUnSelect(DateModel dateModel);
+
+/// 多选超出指定范围
+typedef void OnMultiSelect(Set<DateModel> dateModels);
 
 /// 多选超出指定范围
 typedef void OnMultiSelectOutOfRange();

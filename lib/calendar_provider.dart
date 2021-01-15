@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_custom_calendar/cache_data.dart';
 import 'package:flutter_custom_calendar/widget/month_view.dart';
 import 'configuration.dart';
-import 'constants/constants.dart';
 import 'flutter_custom_calendar.dart';
 import 'utils/LogUtil.dart';
 import 'utils/date_util.dart';
@@ -15,7 +14,7 @@ import 'model/date_model.dart';
 
 class CalendarProvider extends ChangeNotifier {
   double _totalHeight; //当前月视图的整体高度
-  HashSet<DateModel> selectedDateList = new HashSet<DateModel>(); //被选中的日期,用于多选
+  HashSet<DateModel> selectedDateList = new HashSet<DateModel>(); //临时保存多选被选中的日期
   DateModel _selectDateModel; //当前选中的日期，用于单选
   ItemContainerState lastClickItemState;
   DateModel _lastClickDateModel;
@@ -56,29 +55,6 @@ class CalendarProvider extends ChangeNotifier {
         TAG: this.runtimeType,
         message: "selectDateModel change:$selectDateModel");
 //    notifyListeners();
-  }
-
-  //根据lastClickDateModel，去计算需要展示的星期视图的初始index
-  int get weekPageIndex {
-    //计算当前星期视图的index
-    print('计算当前星期视图的index  = > lastClickDateModel$lastClickDateModel');
-    DateModel dateModel = lastClickDateModel;
-    DateTime firstWeek = calendarConfiguration.weekList[0].getDateTime();
-    int index = 0;
-    for (int i = 0; i < calendarConfiguration.weekList.length; i++) {
-      DateTime nextWeek = firstWeek.add(Duration(days: 7));
-      if (dateModel.getDateTime().isBefore(nextWeek)) {
-        index = i;
-        break;
-      } else {
-        firstWeek = nextWeek;
-        index++;
-      }
-    }
-
-    print(
-        "lastClickDateModel:$lastClickDateModel,weekPageIndex:$index, totalHeight:$totalHeight");
-    return index;
   }
 
   //根据lastClickDateModel，去计算需要展示的月视图的index
@@ -122,9 +98,6 @@ class CalendarProvider extends ChangeNotifier {
   }) {
     LogUtil.log(TAG: this.runtimeType, message: "CalendarProvider initData");
     this.calendarConfiguration = calendarConfiguration;
-    this
-        .selectedDateList
-        .addAll(this.calendarConfiguration.defaultSelectedDateList);
     this.selectDateModel = this.calendarConfiguration.selectDateModel;
     this.calendarConfiguration.padding = padding;
     this.calendarConfiguration.margin = margin;
@@ -133,8 +106,7 @@ class CalendarProvider extends ChangeNotifier {
     this.calendarConfiguration.dayWidgetBuilder = dayWidgetBuilder;
     this.calendarConfiguration.weekBarItemWidgetBuilder =
         weekBarItemWidgetBuilder;
-    this.calendarConfiguration.itemCanClick =
-        itemCanClick;
+    this.calendarConfiguration.itemCanClick = itemCanClick;
 
     //lastClickDateModel，默认是选中的item，如果为空的话，默认是当前的时间
     this.lastClickDateModel = selectDateModel != null
@@ -171,7 +143,6 @@ class CalendarProvider extends ChangeNotifier {
   void clearData() {
     LogUtil.log(TAG: this.runtimeType, message: "CalendarProvider clearData");
     CacheData.getInstance().clearData();
-    selectedDateList.clear();
     selectDateModel = null;
     calendarConfiguration = null;
   }

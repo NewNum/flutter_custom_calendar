@@ -1,6 +1,8 @@
 import 'package:flutter_custom_calendar/utils/date_util.dart';
 import 'package:flutter_custom_calendar/utils/lunar_util.dart';
 
+import 'unavailable_bean.dart';
+
 /// 日期的实体类
 
 class DateModel {

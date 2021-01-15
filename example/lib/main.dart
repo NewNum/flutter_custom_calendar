@@ -21,16 +21,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     var dateTime = DateTime.now();
     return MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-            primarySwatch: Colors.blue,
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-            focusColor: Colors.teal),
-        home: ChangeNotifierProvider<DateViewModel>(
-            create: (_) => DateViewModel(dateTime.year, dateTime.month),
-            builder: (context, _) {
-              return MyHomePage(title: 'Flutter Demo Home Page');
-            }),
+      title: 'Flutter Demo',
+      theme: ThemeData(
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          focusColor: Colors.teal),
+      home: ChangeNotifierProvider<DateViewModel>(
+          create: (_) => DateViewModel(dateTime.year, dateTime.month),
+          builder: (context, _) {
+            return MyHomePage(title: 'Flutter Demo Home Page');
+          }),
     );
   }
 }
@@ -62,6 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
       maxYearMonth: endDateTime.month,
       selectedDateTimeList: _selectedDate,
       offset: 1,
+      selectMode: CalendarSelectedMode.singleSelect,
     )
       ..addMonthChangeListener((year, month) {
         context.read<DateViewModel>().setDate(year, month);
@@ -86,17 +87,15 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       dayWidgetBuilder: (DateModel model) {
         var modelDateTime = DateTime(model.year, model.month, model.day);
+        var today = isToday(modelDateTime);
         return ColoredBox(
           color: model.isSelected ? Colors.red : Colors.white,
           child: Center(
             child: Text(
-              model.day == 0 ? "" : model.day.toString(),
+              model.day == 0 ? "" : (today ? "今" : model.day.toString()),
               style: TextStyle(
-                  color: DateTime.now().isBefore(modelDateTime) ||
-                      isToday(modelDateTime)
-                      ? model.isSelected
-                      ? Colors.white
-                      : Colors.black
+                  color: DateTime.now().isBefore(modelDateTime) || today
+                      ? (model.isSelected ? Colors.white : Colors.black)
                       : Colors.grey),
             ),
           ),
@@ -112,16 +111,23 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(context.watch<DateViewModel>().getDate()),
-            ],
-          ),
-          calendar
-        ],
+      body: CupertinoScrollbar(
+        child: CustomScrollView(
+          slivers: [
+            _topButtons(),
+            SliverToBoxAdapter(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(context.watch<DateViewModel>().getDate()),
+                ],
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: calendar,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -131,5 +137,71 @@ class _MyHomePageState extends State<MyHomePage> {
     return now.year == dateTime.year &&
         now.month == dateTime.month &&
         now.day == dateTime.day;
+  }
+
+  Widget _topButtons() {
+    return SliverToBoxAdapter(
+      child: Wrap(
+        direction: Axis.vertical,
+        crossAxisAlignment: WrapCrossAlignment.start,
+        children: <Widget>[
+          Text('请选择mode'),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: <Widget>[
+              FlatButton(
+                child: Text(
+                  '单选',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onPressed: () {
+                  setState(() {
+                    controller.calendarConfiguration.selectMode =
+                        CalendarSelectedMode.singleSelect;
+                  });
+                },
+                color: controller.calendarConfiguration.selectMode ==
+                        CalendarSelectedMode.singleSelect
+                    ? Colors.teal
+                    : Colors.black38,
+              ),
+              FlatButton(
+                child: Text(
+                  '多选',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onPressed: () {
+                  setState(() {
+                    controller.calendarConfiguration.selectMode =
+                        CalendarSelectedMode.multiSelect;
+                  });
+                },
+                color: controller.calendarConfiguration.selectMode ==
+                        CalendarSelectedMode.multiSelect
+                    ? Colors.teal
+                    : Colors.black38,
+              ),
+              FlatButton(
+                child: Text(
+                  '多选 选择开始和结束',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onPressed: () {
+                  setState(() {
+                    controller.calendarConfiguration.selectMode =
+                        CalendarSelectedMode.mutltiStartToEndSelect;
+                  });
+                },
+                color: controller.calendarConfiguration.selectMode ==
+                        CalendarSelectedMode.mutltiStartToEndSelect
+                    ? Colors.teal
+                    : Colors.black38,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
