@@ -12,13 +12,6 @@ class DateModel {
 
   List<int> lunar = List(3);
 
-//  List<int> get lunar {
-//    if (lunar?.isNotEmpty == false) {
-//      return lunar;
-//    }
-////    return LunarUtil.solarToLunar(year, month, day);
-//  }
-
   //农历字符串
   String get lunarString {
     if (solarTerm.isNotEmpty) {
@@ -44,7 +37,7 @@ class DateModel {
     return LunarUtil.getSpecialFestival(year, month, day);
   }
 
-//传统农历节日
+  //传统农历节日
   String get traditionFestival =>
       LunarUtil.getTraditionFestival(lunarYear, lunarMonth, lunarDay);
 
@@ -52,10 +45,8 @@ class DateModel {
 
   Object extraData; //自定义的额外数据
 
-  bool isInRange = false; //是否在范围内,比如可以实现在某个范围外，设置置灰的功能
   bool isSelected = false; //是否被选中，用来实现一些标记或者选择功能
-  bool isCanClick =
-      true; //todo:是否可点击：设置范围外的日历不可点击，或者可以通过自定义拦截点击事件来设置true或者false
+  bool isCanClick = true; //是否可点击,可以通过自定义拦截点击事件来设置true或者false
   //是否是周末
   bool get isWeekend => DateUtil.isWeekend(getDateTime());
 

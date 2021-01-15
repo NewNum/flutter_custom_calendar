@@ -51,10 +51,6 @@ class CalendarProvider extends ChangeNotifier {
 
   set selectDateModel(DateModel value) {
     _selectDateModel = value;
-    LogUtil.log(
-        TAG: this.runtimeType,
-        message: "selectDateModel change:$selectDateModel");
-//    notifyListeners();
   }
 
   //根据lastClickDateModel，去计算需要展示的月视图的index
@@ -74,12 +70,8 @@ class CalendarProvider extends ChangeNotifier {
       }
     }
 
-    print(
-        "lastClickDateModel:$lastClickDateModel, monthPageIndex:$index, totalHeight:$totalHeight");
     return index;
   }
-
-  ValueNotifier<bool> expandStatus; //当前展开状态
 
   //配置类也放这里吧，这样的话，所有子树，都可以拿到配置的信息
   CalendarConfiguration calendarConfiguration;
@@ -98,7 +90,6 @@ class CalendarProvider extends ChangeNotifier {
   }) {
     LogUtil.log(TAG: this.runtimeType, message: "CalendarProvider initData");
     this.calendarConfiguration = calendarConfiguration;
-    this.selectDateModel = this.calendarConfiguration.selectDateModel;
     this.calendarConfiguration.padding = padding;
     this.calendarConfiguration.margin = margin;
     this.calendarConfiguration.itemSize = itemSize;
@@ -107,12 +98,11 @@ class CalendarProvider extends ChangeNotifier {
     this.calendarConfiguration.weekBarItemWidgetBuilder =
         weekBarItemWidgetBuilder;
     this.calendarConfiguration.itemCanClick = itemCanClick;
+    this.selectDateModel = this.calendarConfiguration.selectDateModel;
 
     //lastClickDateModel，默认是选中的item，如果为空的话，默认是当前的时间
-    this.lastClickDateModel = selectDateModel != null
-        ? selectDateModel
-        : DateModel.fromDateTime(DateTime.now())
-      ..isSelected = true;
+    this.lastClickDateModel = selectDateModel..isSelected = true;
+
     //初始化item的大小。如果itemSize为空，默认是宽度/7。网页版的话是高度/7。需要减去padding和margin值
     if (calendarConfiguration.itemSize == null) {
       MediaQueryData mediaQueryData =

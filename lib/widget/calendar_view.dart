@@ -69,7 +69,6 @@ class _CalendarViewWidgetState extends State<CalendarViewWidget> {
 
   @override
   void dispose() {
-//    widget.calendarController.clearData();
     super.dispose();
   }
 

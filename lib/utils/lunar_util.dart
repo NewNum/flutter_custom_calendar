@@ -461,15 +461,11 @@ class LunarUtil {
     0x107e48
   ];
 
-  ////**
-  ///* 保存每年24节气
-  ///*/
+  ///保存每年24节气
   static final Map<int, List<String>> SOLAR_TERMS = new Map();
 
-  ////**
-  ///* 公历节日
-  ///*/
-  static List<String> SOLAR_CALENDAR = [
+  ///公历节日
+  static const List<String> SOLAR_CALENDAR = [
     "0101元旦",
     "0214情人节",
     "0308妇女节",
@@ -490,10 +486,8 @@ class LunarUtil {
     "1225圣诞节",
   ];
 
-  /**
-   * 传统农历节日
-   */
-  static List<String> TRADITION_FESTIVAL_STR = [
+  /// 传统农历节日
+  static const List<String> TRADITION_FESTIVAL_STR = [
     "除夕",
     "0101春节",
     "0115元宵",
@@ -503,30 +497,23 @@ class LunarUtil {
     "0909重阳",
   ];
 
-  /**
-   * 特殊节日、母亲节和父亲节,感恩节等
-   */
+  /// 特殊节日、母亲节和父亲节,感恩节等
   static final Map<int, List<String>> SPECIAL_FESTIVAL = new Map();
 
-  /**
-   * 特殊节日的数组
-   */
-  static List<String> SPECIAL_FESTIVAL_STR = [
+  /// 特殊节日的数组
+  static const List<String> SPECIAL_FESTIVAL_STR = [
     "母亲节",
     "父亲节",
     "感恩节",
   ];
 
-  /**
-   * 用来表示1900年到2099年间农历年份的相关信息，共24位bit的16进制表示，其中：
-   * 1. 前4位表示该年闰哪个月；
-   * 2. 5-17位表示农历年份13个月的大小月分布，0表示小，1表示大；
-   * 3. 最后7位表示农历年首（正月初一）对应的公历日期。
-   * <p/>
-   * 以2014年的数据0x955ABF为例说明：
-   * 1001 0101 0101 1010 1011 1111
-   * 闰九月 农历正月初一对应公历1月31号
-   */
+  /// 用来表示1900年到2099年间农历年份的相关信息，共24位bit的16进制表示，其中：
+  /// 1. 前4位表示该年闰哪个月；
+  /// 2. 5-17位表示农历年份13个月的大小月分布，0表示小，1表示大；
+  /// 3. 最后7位表示农历年首（正月初一）对应的公历日期。
+  /// 以2014年的数据0x955ABF为例说明：
+  /// 1001 0101 0101 1010 1011 1111
+  /// 闰九月 农历正月初一对应公历1月31号
   static final List<int> LUNAR_INFO = [
     0x84B6BF,
     /*1900*/
@@ -750,64 +737,24 @@ class LunarUtil {
     0x2D92B5 /*2091-2099*/
   ];
 
-  /**
-   * 初始化各种农历、节日
-   *
-   * @param calendar calendar
-   */
+  /// 初始化各种农历、节日
+  ///
+  /// @param calendar calendar
   static void setupLunarCalendar(DateModel dateModel) {
     int year = dateModel.year;
     int month = dateModel.month;
     int day = dateModel.day;
-
-//    dateModel.isWeekend = DateUtil.isWeekend(new DateTime(year, month, day));
-//    dateModel.isLeapYear = DateUtil.isLeapYear(year);
-//    dateModel.isCurrentDay = DateUtil.isCurrentDay(year, month, day);
-
-    List<int> lunar = LunarUtil.solarToLunar(2020, 2, day);
-
-//    dateModel.lunarYear = (lunar[0]);
-//    dateModel.lunarMonth = (lunar[1]);
-//    dateModel.lunarDay = (lunar[2]);
-
-//    if (lunar[3] == 1) {
-//      //如果是闰月
-//      dateModel.leapMonth = lunar[1];
-//    }
-    //24节气
-//    String solarTerm = getSolarTerm(year, month, day);
-//    dateModel.solarTerm=solarTerm;
-//    //公历节日
-//    String gregorian = gregorianFestival(month, day);
-//    dateModel.gregorianFestival=gregorian;
-//    //传统农历节日
-//    String festival = getTraditionFestival(lunar[0], lunar[1], lunar[2]);
-//    dateModel.traditionFestival=festival;
+    List<int> lunar = LunarUtil.solarToLunar(year, month, day);
     //农历格式的日期
     String lunarText = numToChinese(lunar[1], lunar[2], lunar[3]);
-
-//    if (gregorian.isEmpty) {
-//      gregorian = getSpecialFestival(year, month, day);
-//    }
-//    if (solarTerm.isNotEmpty) {
-//      dateModel.lunarString = solarTerm;
-//    } else if (gregorian.isNotEmpty) {
-//      dateModel.lunarString = gregorian;
-//    } else if (festival.isNotEmpty) {
-//      dateModel.lunarString = festival;
-//    } else {
-//      dateModel.lunarString = lunarText;
-//    }
   }
 
-  /**
-   * 公历转农历 Solar To Lunar
-   *
-   * @param year  公历年
-   * @param month 公历月
-   * @param day   公历日
-   * @return [0]农历年 [1]农历月 [2]农历日 [3]是否闰月 0 false : 1 true
-   */
+  /// 公历转农历 Solar To Lunar
+  ///
+  /// @param year  公历年
+  /// @param month 公历月
+  /// @param day   公历日
+  /// @return [0]农历年 [1]农历月 [2]农历日 [3]是否闰月 0 false : 1 true
   static List<int> solarToLunar(int year, int month, int day) {
     List<int> lunarInt = new List(4);
     int index = year - SOLAR[0];
@@ -870,14 +817,12 @@ class LunarUtil {
         (d - 1));
   }
 
-  /**
-   * 返回24节气
-   *
-   * @param year  年
-   * @param month 月
-   * @param day   日
-   * @return 返回24节气
-   */
+  /// 返回24节气
+  ///
+  /// @param year  年
+  /// @param month 月
+  /// @param day   日
+  /// @return 返回24节气
   static String getSolarTerm(int year, int month, int day) {
     if (!SOLAR_TERMS.containsKey(year)) {
       SOLAR_TERMS.addAll({year: SolarTermUtil.getSolarTerms(year)});
@@ -894,14 +839,12 @@ class LunarUtil {
     return solar;
   }
 
-  /**
-   * 数字转换为农历节日或者日期
-   *
-   * @param month 月
-   * @param day   日
-   * @param leap  1==闰月
-   * @return 数字转换为汉字日
-   */
+  /// 数字转换为农历节日或者日期
+  ///
+  /// @param month 月
+  /// @param day   日
+  /// @param leap  1==闰月
+  /// @return 数字转换为汉字日
   static String numToChinese(int month, int day, int leap) {
     if (day == 1) {
       return numToChineseMonth(month, leap);
@@ -909,13 +852,11 @@ class LunarUtil {
     return CalendarConstants.LUNAR_DAY_TEXT[day - 1];
   }
 
-  /**
-   * 数字转换为汉字月份
-   *
-   * @param month 月
-   * @param leap  1==闰月
-   * @return 数字转换为汉字月份
-   */
+  /// 数字转换为汉字月份
+  ///
+  /// @param month 月
+  /// @param leap  1==闰月
+  /// @return 数字转换为汉字月份
   static String numToChineseMonth(int month, int leap) {
     if (leap == 1) {
       return "闰" + CalendarConstants.LUNAR_MONTH_TEXT[month - 1];

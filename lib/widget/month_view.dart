@@ -69,8 +69,6 @@ class _MonthViewState extends State<MonthView>
     items = await compute(initCalendarForMonthView, {
       'year': widget.year,
       'month': widget.month,
-      'minSelectDate': widget.configuration.minSelectDate,
-      'maxSelectDate': widget.configuration.maxSelectDate,
       'offset': widget.configuration.offset
     });
     setState(() {});
@@ -79,8 +77,6 @@ class _MonthViewState extends State<MonthView>
   static Future<List<DateModel>> initCalendarForMonthView(Map map) async {
     return DateUtil.initCalendarForMonthView(
         map['year'], map['month'], DateTime.now(), DateTime.sunday,
-        minSelectDate: map['minSelectDate'],
-        maxSelectDate: map['maxSelectDate'],
         extraDataMap: map['extraDataMap'],
         offset: map['offset']);
   }
@@ -119,7 +115,7 @@ class _MonthViewState extends State<MonthView>
               break;
 
             /// 选择开始和结束 中间的自动选择
-            case CalendarSelectedMode.mutltiStartToEndSelect:
+            case CalendarSelectedMode.multiStartToEndSelect:
               if (calendarProvider.selectedDateList.contains(dateModel)) {
                 dateModel.isSelected = true;
               } else {
@@ -137,6 +133,7 @@ class _MonthViewState extends State<MonthView>
               break;
           }
 
+          dateModel.isCanClick = configuration.itemCanClick(dateModel);
           return ItemContainer(
             dateModel: dateModel,
             key: ObjectKey(dateModel),
@@ -219,19 +216,22 @@ class ItemContainerState extends State<ItemContainer> {
 
   @override
   Widget build(BuildContext context) {
-//    LogUtil.log(TAG: this.runtimeType, message: "ItemContainerState build");
     calendarProvider = Provider.of<CalendarProvider>(context, listen: false);
     configuration = calendarProvider.calendarConfiguration;
 
     return GestureDetector(
       //点击整个item都会触发事件
       behavior: HitTestBehavior.opaque,
-      onTap: () => configuration.onItemClick.call(
-        this,
-        configuration,
-        dateModel,
-        calendarProvider,
-      ),
+      onTap: () {
+        if (dateModel.isCanClick) {
+          configuration.onItemClick.call(
+            this,
+            configuration,
+            dateModel,
+            calendarProvider,
+          );
+        }
+      },
       child: configuration.dayWidgetBuilder(dateModel),
     );
   }

@@ -33,15 +33,8 @@ class CalendarController {
     int maxYearMonth = 12,
     int nowYear,
     int nowMonth,
-    int minSelectYear = 1971,
-    int minSelectMonth = 1,
-    int minSelectDay = 1,
-    int maxSelectYear = 2055,
-    int maxSelectMonth = 12,
-    int maxSelectDay = 30,
     Set<DateTime> selectedDateTimeList = EMPTY_SET, //多选模式下，默认选中的item列表
     DateModel selectDateModel, //单选模式下，默认选中的item
-    int maxMultiSelectCount = 9999,
     Map<DateModel, dynamic> extraDataMap = EMPTY_MAP,
     int offset = 0, // 首日偏移量
     OnItemClick onItemClick = defaultOnItemClick, // 首日偏移量
@@ -62,41 +55,14 @@ class CalendarController {
       maxYearMonth: maxYearMonth,
       nowYear: nowYear,
       nowMonth: nowMonth,
-      minSelectYear: minSelectYear,
-      minSelectMonth: minSelectMonth,
       minYearMonth: minYearMonth,
-      minSelectDay: minSelectDay,
-      maxSelectYear: maxSelectYear,
-      maxSelectMonth: maxSelectMonth,
       extraDataMap: extraDataMap,
-      maxSelectDay: maxSelectDay,
-      maxMultiSelectCount: maxMultiSelectCount,
       selectDateModel: selectDateModel,
       offset: offset,
       onItemClick: onItemClick,
     );
-
     //将默认选中的数据，放到provider中
     calendarProvider.selectDateModel = selectDateModel;
-
-    calendarConfiguration.minSelectDate = DateModel.fromDateTime(DateTime(
-        calendarConfiguration.minSelectYear,
-        calendarConfiguration.minSelectMonth,
-        calendarConfiguration.minSelectDay));
-    calendarConfiguration.maxSelectDate = DateModel.fromDateTime(DateTime(
-        calendarConfiguration.maxSelectYear,
-        calendarConfiguration.maxSelectMonth,
-        calendarConfiguration.maxSelectDay));
-
-    LogUtil.log(
-        TAG: this.runtimeType,
-        message: "start:${DateModel.fromDateTime(DateTime(
-          minYear,
-          minYearMonth,
-        ))},end:${DateModel.fromDateTime(DateTime(
-          maxYear,
-          maxYearMonth,
-        ))}");
     _weekAndMonthViewChange();
   }
 
@@ -160,18 +126,12 @@ class CalendarController {
   }
 
   //多选结束监听
-  void addOnMultiSelectListener(OnMultiSelect listener) {
-    this.calendarConfiguration.onMultiSelect = listener;
+  void addOnMultiSelectEndListener(OnMultiSelectEnd listener) {
+    this.calendarConfiguration.onMultiSelectEnd = listener;
   }
 
-  //多选超出指定范围
-  void addOnMultiSelectOutOfRangeListener(OnMultiSelectOutOfRange listener) {
-    this.calendarConfiguration.multiSelectOutOfRange = listener;
-  }
-
-  //多选超出限制个数
-  void addOnMultiSelectOutOfSizeListener(OnMultiSelectOutOfSize listener) {
-    this.calendarConfiguration.multiSelectOutOfSize = listener;
+  void addOnMultiSelectStartListener(OnMultiSelectStart listener){
+    this.calendarConfiguration.onMultiSelectStart = listener;
   }
 
   //可以动态修改extraDataMap
@@ -349,7 +309,6 @@ class CalendarController {
   void clearData() {
     monthList.clear();
     calendarProvider.clearData();
-    calendarConfiguration.weekChangeListeners = null;
     calendarConfiguration.monthChangeListeners = null;
   }
 }
@@ -390,14 +349,7 @@ void defaultOnItemClick(
   DateModel dateModel,
   CalendarProvider calendarProvider,
 ) {
-  if (!configuration.itemCanClick(dateModel)) {
-    return;
-  }
-  //范围外不可点击
-  if (!dateModel.isInRange) {
-    return;
-  }
-  print('244 周视图的变化: $dateModel');
+
   calendarProvider.lastClickDateModel = dateModel;
 
   switch (configuration.selectMode) {
@@ -408,13 +360,6 @@ void defaultOnItemClick(
         itemContainerState.notifiCationUnCalendarSelect(dateModel);
       } else {
         //多选，判断是否超过限制，超过范围
-        if (calendarProvider.selectedDateList.length ==
-            configuration.maxMultiSelectCount) {
-          if (configuration.multiSelectOutOfSize != null) {
-            configuration.multiSelectOutOfSize();
-          }
-          return;
-        }
         dateModel.isSelected = !dateModel.isSelected;
         calendarProvider.selectedDateList.add(dateModel);
       }
@@ -445,7 +390,7 @@ void defaultOnItemClick(
       break;
 
     /// 选择范围
-    case CalendarSelectedMode.mutltiStartToEndSelect:
+    case CalendarSelectedMode.multiStartToEndSelect:
       if (calendarProvider.selectedDateList.length == 0) {
         calendarProvider.selectedDateList.add(dateModel);
       } else if (calendarProvider.selectedDateList.length == 1) {
@@ -510,14 +455,11 @@ typedef void OnCalendarSelect(DateModel dateModel);
 /// 取消选择
 typedef void OnCalendarUnSelect(DateModel dateModel);
 
-/// 多选超出指定范围
-typedef void OnMultiSelect(Set<DateModel> dateModels);
+/// 多选结束
+typedef void OnMultiSelectEnd(Set<DateModel> dateModels);
 
-/// 多选超出指定范围
-typedef void OnMultiSelectOutOfRange();
-
-/// 多选超出限制个数
-typedef void OnMultiSelectOutOfSize();
+/// 多选开始
+typedef void OnMultiSelectStart(DateModel dateModels);
 
 /// 可以创建自定义样式的item
 typedef Widget DayWidgetBuilder(DateModel dateModel);
