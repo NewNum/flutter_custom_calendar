@@ -1,11 +1,12 @@
 import 'dart:core';
 import 'dart:math';
 
-import 'package:flutter_custom_calendar/utils/math_util.dart';
+import 'math_util.dart';
 
+// ignore: avoid_classes_with_only_static_members
 class SolarTermUtil {
   /// 24节气
-  static const List<String> SOLAR_TERMS = [
+  static const List<String> chinaSolarTerms = [
     "春分",
     "清明",
     "谷雨",
@@ -33,17 +34,17 @@ class SolarTermUtil {
   ];
 
   /// 每弧度的角秒数
-  static const double SECOND_PER_RAD = 180 * 3600 / pi;
+  static const double secondPerRad = 180 * 3600 / pi;
 
   /// 每弧度的角度数
-  static const double ANGLE_PER_RAD = 180 / pi;
+  static const double anglePerRad = 180 / pi;
 
   /// 日历计算
   ///   * 2000年前儒略日数(2000-1-1)
-  static const double J2000 = 2451545;
+  static const double j2000 = 2451545;
 
   /// 黄赤交角系数表
-  static const List<double> H_C_ANGLE_TABLE = [
+  static const List<double> hcAngleTable = [
     0,
     50287.92262,
     111.24406,
@@ -55,7 +56,7 @@ class SolarTermUtil {
   ];
 
   /// 世界时与原子时之差计算表
-  static const List<double> DTS = [
+  static const List<double> dts = [
     -4000,
     108371.7,
     -13036.80,
@@ -160,26 +161,26 @@ class SolarTermUtil {
   ];
 
   /// 离心率
-  static const List<double> GXC_E = [0.016708634, -0.000042037, -0.0000001267];
+  static const List<double> gxcE = [0.016708634, -0.000042037, -0.0000001267];
 
   /// 近点
-  static const List<double> GXC_P = [
-    102.93735 / ANGLE_PER_RAD,
-    1.71946 / ANGLE_PER_RAD,
-    0.00046 / ANGLE_PER_RAD
+  static const List<double> gxcP = [
+    102.93735 / anglePerRad,
+    1.71946 / anglePerRad,
+    0.00046 / anglePerRad
   ];
 
   /// 太平黄经
-  static const List<double> GXC_L = [
-    280.4664567 / ANGLE_PER_RAD,
-    36000.76982779 / ANGLE_PER_RAD,
-    0.0003032028 / ANGLE_PER_RAD,
-    1 / 49931000 / ANGLE_PER_RAD,
-    -1 / 153000000 / ANGLE_PER_RAD
+  static const List<double> gxcL = [
+    280.4664567 / anglePerRad,
+    36000.76982779 / anglePerRad,
+    0.0003032028 / anglePerRad,
+    1 / 49931000 / anglePerRad,
+    -1 / 153000000 / anglePerRad
   ];
 
   /// 光行差常数
-  static const double GXC_K = 20.49552 / SECOND_PER_RAD;
+  static const double gxcK = 20.49552 / secondPerRad;
 
   /// 向下取整
   ///
@@ -208,12 +209,14 @@ class SolarTermUtil {
   /// @return 计算世界时与原子时之差
   static double worldTimeDiff(double year) {
     int i;
-    for (i = 0; i < 100; i += 5) if (year < DTS[i + 5] || i == 95) break;
+    for (i = 0; i < 100; i += 5) {
+      if (year < dts[i + 5] || i == 95) break;
+    }
 
-    double t1 = (year - DTS[i]) / (DTS[i + 5] - DTS[i]) * 10;
-    double t2 = t1 * t1;
-    double t3 = t2 * t1;
-    return DTS[i + 1] + DTS[i + 2] * t1 + DTS[i + 3] * t2 + DTS[i + 4] * t3;
+    var t1 = (year - dts[i]) / (dts[i + 5] - dts[i]) * 10;
+    var t2 = t1 * t1;
+    var t3 = t2 * t1;
+    return dts[i + 1] + dts[i + 2] * t1 + dts[i + 3] * t2 + dts[i + 4] * t3;
   }
 
   /// 传入儒略日(J2000起算),计算UTC与原子时的差(单位:日)
@@ -228,10 +231,10 @@ class SolarTermUtil {
   ///
   /// @param UTC UTC
   /// @return 公历转儒略日, UTC=1表示原日期是UTC
-  static double toJulian(Time time, bool utc) {
-    double y = time.year; // 取出年月
-    double m = time.month;
-    double n = 0;
+  static double toJulian(Time time, {bool utc}) {
+    var y = time.year; // 取出年月
+    var m = time.month;
+    var n = 0.0;
 
     if (m <= 2) {
       m += 12;
@@ -247,7 +250,7 @@ class SolarTermUtil {
     n += doubleFloor(365.2500001 * (y + 4716)); // 加上年引起的偏移日数
     n += doubleFloor(30.6 * (m + 1)) + time.day; // 加上月引起的偏移日数及日偏移数
     n += ((time.second / 60 + time.minute) / 60 + time.hour) / 24 - 1524.5;
-    if (utc) return n + atomTimeDiff(n - J2000);
+    if (utc) return n + atomTimeDiff(n - j2000);
 
     return n;
   }
@@ -256,15 +259,15 @@ class SolarTermUtil {
   ///
   /// @param jd  jd
   /// @param UTC UTC
-  static Time setFromJulian(double jd, bool utc) {
-    Time time = new Time();
-    if (utc) jd -= atomTimeDiff(jd - J2000);
+  static Time setFromJulian(double jd, {bool utc}) {
+    var time = Time();
+    if (utc) jd -= atomTimeDiff(jd - j2000);
 
     jd += 0.5;
 
 // 取得日数的整数部份A及小数部分F
-    double A = doubleFloor(jd);
-    double F = jd - A;
+    var A = doubleFloor(jd);
+    var F = jd - A;
     double D;
 
     if (A > 2299161) {
@@ -298,12 +301,12 @@ class SolarTermUtil {
   /// @param zb zb
   static void precession(double jd, List<double> zb) {
     int i;
-    double t = 1, v = 0, t1 = jd / 365250;
+    var t = 1.0, v = 0.0, t1 = jd / 365250;
     for (i = 1; i < 8; i++) {
       t *= t1;
-      v += H_C_ANGLE_TABLE[i] * t;
+      v += hcAngleTable[i] * t;
     }
-    zb[0] = rad2mrad(zb[0] + (v + 2.9965 * t1) / SECOND_PER_RAD);
+    zb[0] = rad2mrad(zb[0] + (v + 2.9965 * t1) / secondPerRad);
   }
 
   /// 恒星周年光行差计算(黄道坐标中)
@@ -311,20 +314,17 @@ class SolarTermUtil {
   /// @param t  t
   /// @param zb zb
   static void addGxc(double t, List<double> zb) {
-    double t1 = t / 36525;
-    double t2 = t1 * t1;
-    double t3 = t2 * t1;
-    double t4 = t3 * t1;
-    double L = GXC_L[0] +
-        GXC_L[1] * t1 +
-        GXC_L[2] * t2 +
-        GXC_L[3] * t3 +
-        GXC_L[4] * t4;
-    double p = GXC_P[0] + GXC_P[1] * t1 + GXC_P[2] * t2;
-    double e = GXC_E[0] + GXC_E[1] * t1 + GXC_E[2] * t2;
-    double dL = L - zb[0], dP = p - zb[0];
-    zb[0] -= GXC_K * (cos(dL) - e * cos(dP)) / cos(zb[1]);
-    zb[1] -= GXC_K * sin(zb[1]) * (sin(dL) - e * sin(dP));
+    var t1 = t / 36525;
+    var t2 = t1 * t1;
+    var t3 = t2 * t1;
+    var t4 = t3 * t1;
+    var L =
+        gxcL[0] + gxcL[1] * t1 + gxcL[2] * t2 + gxcL[3] * t3 + gxcL[4] * t4;
+    var p = gxcP[0] + gxcP[1] * t1 + gxcP[2] * t2;
+    var e = gxcE[0] + gxcE[1] * t1 + gxcE[2] * t2;
+    var dL = L - zb[0], dP = p - zb[0];
+    zb[0] -= gxcK * (cos(dL) - e * cos(dP)) / cos(zb[1]);
+    zb[1] -= gxcK * sin(zb[1]) * (sin(dL) - e * sin(dP));
     zb[0] = rad2mrad(zb[0]);
   }
 
@@ -353,12 +353,12 @@ class SolarTermUtil {
   /// @param t t
   /// @return 计算黄经章动及交角章动
   static Nutation nutation(double t) {
-    Nutation d = new Nutation();
+    var d = Nutation();
     d.lon = 0;
     d.obl = 0;
     t /= 36525;
     double c, t1 = t, t2 = t1 * t1, t3 = t2 * t1, t4 = t3 * t1; // t5=t4*t1;
-    for (int i = 0; i < nutB.length; i += 9) {
+    for (var i = 0; i < nutB.length; i += 9) {
       c = nutB[i] +
           nutB[i + 1] * t1 +
           nutB[i + 2] * t2 +
@@ -367,8 +367,8 @@ class SolarTermUtil {
       d.lon += (nutB[i + 5] + nutB[i + 6] * t / 10) * sin(c); // 黄经章动
       d.obl += (nutB[i + 7] + nutB[i + 8] * t / 10) * cos(c); // 交角章动
     }
-    d.lon /= SECOND_PER_RAD * 10000; // 黄经章动
-    d.obl /= SECOND_PER_RAD * 10000; // 交角章动
+    d.lon /= secondPerRad * 10000; // 黄经章动
+    d.obl /= secondPerRad * 10000; // 交角章动
     return d;
   }
 
@@ -386,7 +386,7 @@ class SolarTermUtil {
   /// M10,M11等是关于月球的,参数的用法请阅读Mnn()函数
   /// //地球运动VSOP87参数
   ///****************************************/
-  static const List<double> E10 = [
+  static const List<double> e10 = [
     //黄经周期项
     1.75347045673,
     0.00000000000,
@@ -569,7 +569,7 @@ class SolarTermUtil {
     1.70876111898,
     2352.8661537718
   ];
-  static const List<double> E11 = [
+  static const List<double> e11 = [
     //黄经泊松1项
     6283.31966747491,
     0.00000000000,
@@ -632,7 +632,7 @@ class SolarTermUtil {
     2.99116864949,
     6275.9623029906
   ];
-  static const List<double> E12 = [
+  static const List<double> e12 = [
     //黄经泊松2项
     0.00052918870,
     0.00000000000,
@@ -665,7 +665,7 @@ class SolarTermUtil {
     4.66284525271,
     1577.3435424478
   ];
-  static const List<double> E13 = [
+  static const List<double> e13 = [
     0.00000289226,
     5.84384198723,
     6283.0758499914,
@@ -676,7 +676,7 @@ class SolarTermUtil {
     5.48766912348,
     12566.1516999828
   ];
-  static const List<double> E14 = [
+  static const List<double> e14 = [
     0.00000114084,
     3.14159265359,
     0.0000000000,
@@ -687,8 +687,8 @@ class SolarTermUtil {
     3.83803776214,
     12566.1516999828
   ];
-  static const List<double> E15 = [0.00000000878, 3.14159265359, 0.0000000000];
-  static const List<double> E20 = [
+  static const List<double> e15 = [0.00000000878, 3.14159265359, 0.0000000000];
+  static const List<double> e20 = [
     //黄纬周期项
     0.00000279620,
     3.19870156017,
@@ -721,7 +721,7 @@ class SolarTermUtil {
     3.41117857525,
     10213.2855462110
   ];
-  static const List<double> E21 = [
+  static const List<double> e21 = [
     0.00000009030,
     3.89729061890,
     5507.5532386674,
@@ -729,7 +729,7 @@ class SolarTermUtil {
     1.73038850355,
     5223.6939198022
   ];
-  static const List<double> E30 = [
+  static const List<double> e30 = [
     //距离周期项
     1.00013988799,
     0.00000000000,
@@ -756,7 +756,7 @@ class SolarTermUtil {
     4.56409149777,
     3930.2096962196
   ];
-  static const List<double> E31 = [
+  static const List<double> e31 = [
     0.00103018608,
     1.10748969588,
     6283.0758499914,
@@ -767,19 +767,19 @@ class SolarTermUtil {
     3.14159265359,
     0.0000000000
   ];
-  static const List<double> E32 = [
+  static const List<double> e32 = [
     0.00004359385,
     5.78455133738,
     6283.0758499914
   ];
-  static const List<double> E33 = [
+  static const List<double> e33 = [
     0.00000144595,
     4.27319435148,
     6283.0758499914
   ];
 
 //月球运动参数
-  static const List<double> M10 = [
+  static const List<double> m10 = [
     22639.5858800,
     2.3555545723,
     8328.6914247251,
@@ -1111,7 +1111,7 @@ class SolarTermUtil {
     2.8300097E-07,
     -1.3951435E-09
   ];
-  static const List<double> M11 = [
+  static const List<double> m11 = [
     1.6768000,
     -0.0431256817,
     628.3019552485,
@@ -1161,7 +1161,7 @@ class SolarTermUtil {
     6.4563317E-08,
     -3.6316908E-10
   ];
-  static const List<double> M12 = [
+  static const List<double> m12 = [
     0.0048700,
     -0.0431256817,
     628.3019552485,
@@ -1181,7 +1181,7 @@ class SolarTermUtil {
     -1.8708058E-07,
     9.3204945E-10
   ];
-  static const List<double> M20 = [
+  static const List<double> m20 = [
     18461.2400600,
     1.6279052448,
     8433.4661576405,
@@ -1513,7 +1513,7 @@ class SolarTermUtil {
     4.9648867E-07,
     -2.4069012E-09
   ];
-  static const List<double> M21 = [
+  static const List<double> m21 = [
     0.0743000,
     11.9537467337,
     6480.9861772950,
@@ -1563,7 +1563,7 @@ class SolarTermUtil {
     -2.5474467E-07,
     1.1521161E-09
   ];
-  static const List<double> M30 = [
+  static const List<double> m30 = [
     385000.5290396,
     1.5707963268,
     0.0000000000,
@@ -1895,7 +1895,7 @@ class SolarTermUtil {
     4.1873358E-08,
     -1.9479814E-10
   ];
-  static const List<double> M31 = [
+  static const List<double> m31 = [
     0.5139500,
     12.0108556517,
     14914.4523349355,
@@ -1945,7 +1945,7 @@ class SolarTermUtil {
     6.2714140E-08,
     -1.9984990E-10
   ];
-  static const List<double> M1n = [
+  static const List<double> m1n = [
     3.81034392032, 8.39968473021E+03, -3.31919929753E-05, //月球平黄经系数
     3.20170955005E-08, -1.53637455544E-10
   ];
@@ -1957,9 +1957,10 @@ class SolarTermUtil {
   /// @param F F
   /// @return 计算E10, E11, E20等
   static double enn(List<double> F) {
-    double v = 0;
-    for (int i = 0; i < F.length; i += 3)
+    var v = 0.0;
+    for (var i = 0; i < F.length; i += 3) {
       v += F[i] * cos(F[i + 1] + ennT * F[i + 2]);
+    }
     return v;
   }
 
@@ -1969,16 +1970,16 @@ class SolarTermUtil {
   /// @return 返回地球位置, 日心Date黄道分点坐标
   static List<double> earCal(double jd) {
     ennT = jd / 365250;
-    List<double> llr = new List(3);
-    double t1 = ennT, t2 = t1 * t1, t3 = t2 * t1, t4 = t3 * t1, t5 = t4 * t1;
-    llr[0] = enn(E10) +
-        enn(E11) * t1 +
-        enn(E12) * t2 +
-        enn(E13) * t3 +
-        enn(E14) * t4 +
-        enn(E15) * t5;
-    llr[1] = enn(E20) + enn(E21) * t1;
-    llr[2] = enn(E30) + enn(E31) * t1 + enn(E32) * t2 + enn(E33) * t3;
+    var llr = List<double>(3);
+    var t1 = ennT, t2 = t1 * t1, t3 = t2 * t1, t4 = t3 * t1, t5 = t4 * t1;
+    llr[0] = enn(e10) +
+        enn(e11) * t1 +
+        enn(e12) * t2 +
+        enn(e13) * t3 +
+        enn(e14) * t4 +
+        enn(e15) * t5;
+    llr[1] = enn(e20) + enn(e21) * t1;
+    llr[2] = enn(e30) + enn(e31) * t1 + enn(e32) * t2 + enn(e33) * t3;
     llr[0] = rad2mrad(llr[0]);
     return llr;
   }
@@ -1991,14 +1992,15 @@ class SolarTermUtil {
   /// @param F F
   /// @return 计算M10, M11, M20等, 计算前先设置MnnT时间
   static double mnn(List<double> F) {
-    double v = 0, t1 = mnnT, t2 = t1 * t1, t3 = t2 * t1, t4 = t3 * t1;
-    for (int i = 0; i < F.length; i += 6)
+    var v = 0.0, t1 = mnnT, t2 = t1 * t1, t3 = t2 * t1, t4 = t3 * t1;
+    for (var i = 0; i < F.length; i += 6) {
       v += F[i] *
           sin(F[i + 1] +
               t1 * F[i + 2] +
               t2 * F[i + 3] +
               t3 * F[i + 4] +
               t4 * F[i + 5]);
+    }
     return v;
   }
 
@@ -2008,13 +2010,13 @@ class SolarTermUtil {
   /// @return return 地心黄道坐标
   static List<double> moonCoord(double julian) {
     mnnT = julian / 36525;
-    double t1 = mnnT, t2 = t1 * t1, t3 = t2 * t1, t4 = t3 * t1;
-    List<double> llr = new List(3);
-    llr[0] = (mnn(M10) + mnn(M11) * t1 + mnn(M12) * t2) / SECOND_PER_RAD;
-    llr[1] = (mnn(M20) + mnn(M21) * t1) / SECOND_PER_RAD;
-    llr[2] = (mnn(M30) + mnn(M31) * t1) * 0.999999949827;
+    var t1 = mnnT, t2 = t1 * t1, t3 = t2 * t1, t4 = t3 * t1;
+    var llr = List<double>(3);
+    llr[0] = (mnn(m10) + mnn(m11) * t1 + mnn(m12) * t2) / secondPerRad;
+    llr[1] = (mnn(m20) + mnn(m21) * t1) / secondPerRad;
+    llr[2] = (mnn(m30) + mnn(m31) * t1) * 0.999999949827;
     llr[0] =
-        llr[0] + M1n[0] + M1n[1] * t1 + M1n[2] * t2 + M1n[3] * t3 + M1n[4] * t4;
+        llr[0] + m1n[0] + m1n[1] * t1 + m1n[2] * t2 + m1n[3] * t3 + m1n[4] * t4;
     llr[0] = rad2mrad(llr[0]); // 地心Date黄道原点坐标(不含岁差)
     precession(julian, llr); // 补岁差
     return llr;
@@ -2027,20 +2029,21 @@ class SolarTermUtil {
   /// @param angle angle
   /// @return 地心坐标中的日月位置计算
   static double angleDiff(int lx, double time, double angle) {
-    List<double> sun = earCal(time); // 计算太阳真位置(先算出日心坐标中地球的位置)
+    var sun = earCal(time); // 计算太阳真位置(先算出日心坐标中地球的位置)
     sun[0] += pi;
     sun[1] = -sun[1]; // 转为地心坐标
     addGxc(time, sun); // 补周年光行差
     if (lx == 0) {
-      Nutation d = nutation(time);
+      var d = nutation(time);
       sun[0] += d.lon; // 补黄经章动
       return rad2mrad(angle - sun[0]);
     }
-    List<double> moon = moonCoord(time); // 日月角差与章动无关
+    var moon = moonCoord(time); // 日月角差与章动无关
     return rad2mrad(angle - (moon[0] - sun[0]));
   }
 
-  /// 已知位置反求时间,对于节气计算,应满足t在t1到t1+360天之间,对于Y年第n个节气(n=0是春分),t1可取值Y*365.2422+n*15.2,
+  /// 已知位置反求时间,对于节气计算,应满足t在t1到t1+360天之间,对于Y年第n个节气(n=0
+  /// 是春分),t1可取值Y*365.2422+n*15.2,
   /// 对于朔望计算,应满足t在t1到t1+25天之间,在此范围之外,求右边的根
   ///
   /// @param t1    J2000起算儒略日数,传入的t1是指定角度对应真时刻t的前一些天
@@ -2050,17 +2053,18 @@ class SolarTermUtil {
   /// @return 已知位置反求时间
   static double getTimeFromAngle(double t1, double angle, int lx) {
     double t2 = t1, t = 0, v;
-    if (lx == 0)
-      t2 += 360; // 在t1到t2范围内求解(范气360天范围),结果置于t
-    else
+    if (lx == 0) {
+      t2 += 360;
+    } else {
       t2 += 25;
+    }
     angle *= pi / 180; // 待搜索目标角
 // 利用截弦法计算
-    double v1 = angleDiff(lx, t1, angle); // v1,v2为t1,t2时对应的黄经
-    double v2 = angleDiff(lx, t2, angle);
+    var v1 = angleDiff(lx, t1, angle); // v1,v2为t1,t2时对应的黄经
+    var v2 = angleDiff(lx, t2, angle);
     if (v1 < v2) v2 -= 2 * pi; // 减2pi作用是将周期性角度转为连续角度
     double k = 1, k2; // k是截弦的斜率
-    for (int i = 0; i < 10; i++) {
+    for (var i = 0; i < 10; i++) {
       // 快速截弦求根,通常截弦三四次就已达所需精度
       k2 = (v2 - v1) / (t2 - t1); // 算出斜率
       if (Math.abs(k2) > 1e-15) k = k2; // 差商可能为零,应排除
@@ -2082,18 +2086,18 @@ class SolarTermUtil {
   /// @return 24节气
 
   static List<String> getSolarTerms(int year) {
-    List<String> solarTerms = new List(24);
-    List<String> preOffset = getSolarTermsPreOffset(year - 1);
-    List<String> nextOffset = getSolarTermsNextOffset(year - 1);
+    var solarTerms = List<String>(24);
+    var preOffset = getSolarTermsPreOffset(year - 1);
+    var nextOffset = getSolarTermsNextOffset(year - 1);
     System.arraycopy(preOffset, 0, solarTerms, 0, preOffset.length);
     System.arraycopy(nextOffset, 0, solarTerms, 22, nextOffset.length);
 
     double jd = 365.2422 * (year - 2000), q;
-    for (int i = 0; i < 19; i++) {
+    for (var i = 0; i < 19; i++) {
       q = getTimeFromAngle(jd + i * 15.2, i * 15.toDouble(), 0);
-      q = q + J2000 + 8 / 24; // 计算第i个节气(i=0是春分),结果转为北京时
-      Time time = setFromJulian(q, true);
-      solarTerms[i + 3] = time.toString() + SOLAR_TERMS[i];
+      q = q + j2000 + 8 / 24; // 计算第i个节气(i=0是春分),结果转为北京时
+      var time = setFromJulian(q,utc: true);
+      solarTerms[i + 3] = time.toString() + chinaSolarTerms[i];
     }
 
     return solarTerms;
@@ -2104,13 +2108,13 @@ class SolarTermUtil {
   /// @param year 要获得2018年24节气需要传入2017年
   /// @return 返回 立春 雨水 惊蛰
   static List<String> getSolarTermsPreOffset(int year) {
-    List<String> solarTerms = new List(3);
+    var solarTerms = List<String>(3);
     double jd = 365.2422 * (year - 2000), q;
-    for (int i = 21; i < 24; i++) {
+    for (var i = 21; i < 24; i++) {
       q = getTimeFromAngle(jd + i * 15.2, i * 15.toDouble(), 0);
-      q = q + J2000 + 8 / 24; // 计算第i个节气(i=0是春分)
-      Time time = setFromJulian(q, true);
-      solarTerms[i - 21] = time.toString() + SOLAR_TERMS[i];
+      q = q + j2000 + 8 / 24; // 计算第i个节气(i=0是春分)
+      var time = setFromJulian(q,utc: true);
+      solarTerms[i - 21] = time.toString() + chinaSolarTerms[i];
     }
     return solarTerms;
   }
@@ -2120,13 +2124,13 @@ class SolarTermUtil {
   /// @param year 要获得2018年24节气需要传入2017年
   /// @return 返回 小寒大寒
   static List<String> getSolarTermsNextOffset(int year) {
-    List<String> solarTerms = new List(2);
+    var solarTerms = List<String>(2);
     double jd = 365.2422 * (year - 2000), q;
-    for (int i = 19; i < 21; i++) {
+    for (var i = 19; i < 21; i++) {
       q = getTimeFromAngle(jd + i * 15.2, i * 15.toDouble(), 0);
-      q = q + J2000 + 8 / 24; // 计算第i个节气(i=0是春分)
-      Time time = setFromJulian(q, true);
-      solarTerms[i - 19] = time.toString() + SOLAR_TERMS[i];
+      q = q + j2000 + 8 / 24; // 计算第i个节气(i=0是春分)
+      var time = setFromJulian(q, utc:true);
+      solarTerms[i - 19] = time.toString() + chinaSolarTerms[i];
     }
     return solarTerms;
   }

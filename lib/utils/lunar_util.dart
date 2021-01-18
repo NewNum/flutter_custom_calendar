@@ -1,12 +1,10 @@
-import 'package:flutter_custom_calendar/flutter_custom_calendar.dart';
-import 'package:flutter_custom_calendar/utils/solar_term_util.dart';
+import '../flutter_custom_calendar.dart';
+import 'solar_term_util.dart';
 
-///**
-///* 农历的工具类
-///*/
 // ignore: avoid_classes_with_only_static_members
+/// 农历的工具类
 class LunarUtil {
-  static const List<int> LUNAR_MONTH_DAYS = [
+  static const List<int> lunarMonthDays = [
     1887,
     0x1694,
     0x16aa,
@@ -234,7 +232,7 @@ class LunarUtil {
     0x15ac
   ];
 
-  static const List<int> SOLAR = [
+  static const List<int> solar = [
     1887,
     0xec04c,
     0xec23f,
@@ -465,12 +463,12 @@ class LunarUtil {
   ////**
   ///* 保存每年24节气
   ///*/
-  static Map<int, List<String>> solarTerms = Map();
+  static Map<int, List<String>> solarTerms = {};
 
   ///
   ///公历节日
   ///
-  static const List<String> SOLAR_CALENDAR = [
+  static const List<String> solarCalendar = [
     "0101元旦",
     "0214情人节",
     "0308妇女节",
@@ -492,7 +490,7 @@ class LunarUtil {
   ];
 
   /// 传统农历节日
-  static const List<String> TRADITION_FESTIVAL_STR = [
+  static const List<String> traditionFestivalStr = [
     "除夕",
     "0101春节",
     "0115元宵",
@@ -503,10 +501,10 @@ class LunarUtil {
   ];
 
   /// 特殊节日、母亲节和父亲节,感恩节等
-  static final Map<int, List<String>> specialFestival = new Map();
+  static final Map<int, List<String>> specialFestival = {};
 
   /// 特殊节日的数组
-  static const List<String> SPECIAL_FESTIVAL_STR = [
+  static const List<String> specialFestivalStr = [
     "母亲节",
     "父亲节",
     "感恩节",
@@ -520,7 +518,7 @@ class LunarUtil {
   /// 以2014年的数据0x955ABF为例说明：
   /// 1001 0101 0101 1010 1011 1111
   /// 闰九月 农历正月初一对应公历1月31号
-  static const List<int> LUNAR_INFO = [
+  static const List<int> lunarInfo = [
     0x84B6BF,
     /*1900*/
     0x04AE53,
@@ -750,29 +748,29 @@ class LunarUtil {
   /// @param day   公历日
   /// @return [0]农历年 [1]农历月 [2]农历日 [3]是否闰月 0 false : 1 true
   static List<int> solarToLunar(int year, int month, int day) {
-    List<int> lunarInt = new List(4);
-    int index = year - SOLAR[0];
-    int data = (year << 9) | (month << 5) | (day);
+    var lunarInt = List<int>(4);
+    var index = year - solar[0];
+    var data = (year << 9) | (month << 5) | (day);
     int solar11;
-    if (SOLAR[index] > data) {
+    if (solar[index] > data) {
       index--;
     }
-    solar11 = SOLAR[index];
-    int y = getBitInt(solar11, 12, 9);
-    int m = getBitInt(solar11, 4, 5);
-    int d = getBitInt(solar11, 5, 0);
-    int offset = solarToInt(year, month, day) - solarToInt(y, m, d);
+    solar11 = solar[index];
+    var y = getBitInt(solar11, 12, 9);
+    var m = getBitInt(solar11, 4, 5);
+    var d = getBitInt(solar11, 5, 0);
+    var offset = solarToInt(year, month, day) - solarToInt(y, m, d);
 
-    int days = LUNAR_MONTH_DAYS[index];
-    int leap = getBitInt(days, 4, 13);
+    var days = lunarMonthDays[index];
+    var leap = getBitInt(days, 4, 13);
 
-    int lunarY = index + SOLAR[0];
-    int lunarM = 1;
+    var lunarY = index + solar[0];
+    var lunarM = 1;
     int lunarD;
     offset += 1;
 
-    for (int i = 0; i < 13; i++) {
-      int dm = getBitInt(days, 1, 12 - i) == 1 ? 30 : 29;
+    for (var i = 0; i < 13; i++) {
+      var dm = getBitInt(days, 1, 12 - i) == 1 ? 30 : 29;
       if (offset > dm) {
         lunarM++;
         offset -= dm;
@@ -821,10 +819,10 @@ class LunarUtil {
     if (!solarTerms.containsKey(year)) {
       solarTerms.addAll({year: SolarTermUtil.getSolarTerms(year)});
     }
-    List<String> solarTerm = solarTerms[year];
-    String text = "$year" + getString(month, day);
-    String solar = "";
-    for (String solarTermName in solarTerm) {
+    var solarTerm = solarTerms[year];
+    var text = "${"$year"}${getString(month, day)}";
+    var solar = "";
+    for (var solarTermName in solarTerm) {
       if (solarTermName.contains(text)) {
         solar = solarTermName.replaceAll(text, "");
         break;
@@ -843,7 +841,7 @@ class LunarUtil {
     if (day == 1) {
       return numToChineseMonth(month, leap);
     }
-    return CalendarConstants.LUNAR_DAY_TEXT[day - 1];
+    return CalendarConstants.lunarDayText[day - 1];
   }
 
   /// 数字转换为汉字月份
@@ -853,9 +851,9 @@ class LunarUtil {
   /// @return 数字转换为汉字月份
   static String numToChineseMonth(int month, int leap) {
     if (leap == 1) {
-      return "闰" + CalendarConstants.LUNAR_MONTH_TEXT[month - 1];
+      return "闰${CalendarConstants.lunarMonthText[month - 1]}";
     }
-    return CalendarConstants.LUNAR_MONTH_TEXT[month - 1];
+    return CalendarConstants.lunarMonthText[month - 1];
   }
 
   static String getString(int month, int day) {
@@ -869,9 +867,9 @@ class LunarUtil {
   /// @param day   公历日期
   /// @return 公历节日
   static String gregorianFestival(int month, int day) {
-    String text = getString(month, day);
-    String solar = "";
-    for (String aMSolarCalendar in SOLAR_CALENDAR) {
+    var text = getString(month, day);
+    var solar = "";
+    for (var aMSolarCalendar in solarCalendar) {
       if (aMSolarCalendar.contains(text)) {
         solar = aMSolarCalendar.replaceAll(text, "");
         break;
@@ -888,14 +886,14 @@ class LunarUtil {
   /// @return 返回传统农历节日
   static String getTraditionFestival(int year, int month, int day) {
     if (month == 12) {
-      int count = daysInLunarMonth(year, month);
+      var count = daysInLunarMonth(year, month);
       if (day == count) {
-        return TRADITION_FESTIVAL_STR[0]; //除夕
+        return traditionFestivalStr[0]; //除夕
       }
     }
-    String text = getString(month, day);
-    String festivalStr = "";
-    for (String festival in TRADITION_FESTIVAL_STR) {
+    var text = getString(month, day);
+    var festivalStr = "";
+    for (var festival in traditionFestivalStr) {
       if (festival.contains(text)) {
         festivalStr = festival.replaceAll(text, "");
         break;
@@ -915,10 +913,7 @@ class LunarUtil {
   /// @return 传回农历 year年month月的总天数
 
   static int daysInLunarMonth(int year, int month) {
-    if ((LUNAR_INFO[year - 1900] & (0x100000 >> month)) == 0)
-      return 29;
-    else
-      return 30;
+    return ((lunarInfo[year - 1900] & (0x100000 >> month)) == 0) ? 29 : 30;
   }
 
   /// 获取特殊计算方式的节日
@@ -933,10 +928,10 @@ class LunarUtil {
     if (!specialFestival.containsKey(year)) {
       specialFestival.addAll({year: getSpecialFestivals(year)});
     }
-    List<String> specialFestivals = specialFestival[year];
-    String text = "$year" + getString(month, day);
-    String solar = "";
-    for (String special in specialFestivals) {
+    var specialFestivals = specialFestival[year];
+    var text = "$year${getString(month, day)}";
+    var solar = "";
+    for (var special in specialFestivals) {
       if (special.contains(text)) {
         solar = special.replaceAll(text, "");
         break;
@@ -951,49 +946,49 @@ class LunarUtil {
   /// @param year 年
   /// @return 获取每年的母亲节和父亲节、感恩节
   static List<String> getSpecialFestivals(int year) {
-    List<String> festivals = new List(3);
-    DateTime dateTime = new DateTime(year, 5, 1);
+    var festivals = List<String>(3);
+    var dateTime = DateTime(year, 5, 1);
 
     //母亲节
-    int week = (dateTime.weekday + 1) % 8;
-    int startDiff = 7 - week + 1;
+    var week = (dateTime.weekday + 1) % 8;
+    var startDiff = 7 - week + 1;
     if (startDiff == 7) {
       festivals[0] =
-          dateToString(year, 5, startDiff + 1) + SPECIAL_FESTIVAL_STR[0];
+          dateToString(year, 5, startDiff + 1) + specialFestivalStr[0];
     } else {
       festivals[0] =
-          dateToString(year, 5, startDiff + 7 + 1) + SPECIAL_FESTIVAL_STR[0];
+          dateToString(year, 5, startDiff + 7 + 1) + specialFestivalStr[0];
     }
 
     //父亲节
-    dateTime = new DateTime(year, 6, 1);
+    dateTime = DateTime(year, 6, 1);
 
     week = (dateTime.weekday + 1) % 8;
     startDiff = 7 - week + 1;
     if (startDiff == 7) {
       festivals[1] =
-          dateToString(year, 6, startDiff + 7 + 1) + SPECIAL_FESTIVAL_STR[1];
+          dateToString(year, 6, startDiff + 7 + 1) + specialFestivalStr[1];
     } else {
-      festivals[1] = dateToString(year, 6, startDiff + 7 + 7 + 1) +
-          SPECIAL_FESTIVAL_STR[1];
+      festivals[1] =
+          dateToString(year, 6, startDiff + 7 + 7 + 1) + specialFestivalStr[1];
     }
 
     //感恩节
-    dateTime = new DateTime(year, 11, 1);
+    dateTime = DateTime(year, 11, 1);
     week = (dateTime.weekday + 1) % 8;
 
     startDiff = 7 - week + 1;
     if (startDiff <= 2) {
       festivals[2] =
-          dateToString(year, 11, startDiff + 21 + 5) + SPECIAL_FESTIVAL_STR[2];
+          dateToString(year, 11, startDiff + 21 + 5) + specialFestivalStr[2];
     } else {
       festivals[2] =
-          dateToString(year, 11, startDiff + 14 + 5) + SPECIAL_FESTIVAL_STR[2];
+          dateToString(year, 11, startDiff + 14 + 5) + specialFestivalStr[2];
     }
     return festivals;
   }
 
   static String dateToString(int year, int month, int day) {
-    return "$year" + getString(month, day);
+    return "$year${getString(month, day)}";
   }
 }

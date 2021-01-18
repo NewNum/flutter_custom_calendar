@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_custom_calendar/cache_data.dart';
-import 'package:flutter_custom_calendar/configuration.dart';
-import 'package:flutter_custom_calendar/flutter_custom_calendar.dart';
-import 'package:flutter_custom_calendar/utils/LogUtil.dart';
-import 'package:flutter_custom_calendar/utils/date_util.dart';
 import 'package:provider/provider.dart';
+
+import '../cache_data.dart';
+import '../configuration.dart';
+import '../flutter_custom_calendar.dart';
+import '../utils/date_util.dart';
 
 /// 月视图，显示整个月的日子
 class MonthView extends StatefulWidget {
@@ -29,7 +29,7 @@ class MonthView extends StatefulWidget {
 
 class _MonthViewState extends State<MonthView>
     with AutomaticKeepAliveClientMixin {
-  List<DateModel> items = List();
+  List<DateModel> _items = List(42);
 
   int lineCount;
   Map<DateModel, dynamic> extraDataMap; //自定义额外的数据
@@ -38,16 +38,14 @@ class _MonthViewState extends State<MonthView>
   void initState() {
     super.initState();
     extraDataMap = widget.configuration.extraDataMap;
-    DateModel firstDayOfMonth =
+    var firstDayOfMonth =
         DateModel.fromDateTime(DateTime(widget.year, widget.month, 1));
     if (CacheData.getInstance().monthListCache[firstDayOfMonth]?.isNotEmpty ==
         true) {
-      LogUtil.log(tag: this.runtimeType, message: "缓存中有数据");
-      items = CacheData.getInstance().monthListCache[firstDayOfMonth];
+      _items = CacheData.getInstance().monthListCache[firstDayOfMonth];
     } else {
-      LogUtil.log(tag: this.runtimeType, message: "缓存中无数据");
       getItems().then((_) {
-        CacheData.getInstance().monthListCache[firstDayOfMonth] = items;
+        CacheData.getInstance().monthListCache[firstDayOfMonth] = _items;
       });
     }
 
@@ -66,7 +64,7 @@ class _MonthViewState extends State<MonthView>
   }
 
   Future getItems() async {
-    items = await compute(initCalendarForMonthView, {
+    _items = await compute(initCalendarForMonthView, {
       'year': widget.year,
       'month': widget.month,
       'minSelectDate': widget.configuration.minSelectDate,
@@ -80,7 +78,7 @@ class _MonthViewState extends State<MonthView>
       Map<String, dynamic> map) async {
     return DateUtil.initCalendarForMonthView(
       map['year'] as int,
-      map['month'] as int ,
+      map['month'] as int,
       DateTime.now(),
       DateTime.sunday,
       minSelectDate: map['minSelectDate'] as DateModel,
@@ -93,14 +91,12 @@ class _MonthViewState extends State<MonthView>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    LogUtil.log(tag: this.runtimeType, message: "_MonthViewState build");
 
-    CalendarProvider calendarProvider =
+    var calendarProvider =
         Provider.of<CalendarProvider>(context, listen: false);
-    CalendarConfiguration configuration =
-        calendarProvider.calendarConfiguration;
+    var configuration = calendarProvider.calendarConfiguration;
 
-    return new GridView.builder(
+    return GridView.builder(
         addAutomaticKeepAlives: true,
         padding: EdgeInsets.zero,
         physics: const NeverScrollableScrollPhysics(),
@@ -108,9 +104,9 @@ class _MonthViewState extends State<MonthView>
           crossAxisCount: 7,
           mainAxisSpacing: configuration.verticalSpacing,
         ),
-        itemCount: items.isEmpty ? 0 : items.length,
+        itemCount: _items.isEmpty ? 0 : _items.length,
         itemBuilder: (context, index) {
-          DateModel dateModel = items[index];
+          var dateModel = _items[index];
           //判断是否被选择
           switch (configuration.selectMode) {
 
@@ -124,7 +120,7 @@ class _MonthViewState extends State<MonthView>
               break;
 
             /// 选择开始和结束 中间的自动选择
-            case CalendarSelectedMode.mutltiStartToEndSelect:
+            case CalendarSelectedMode.multiStartToEndSelect:
               if (calendarProvider.selectedDateList.contains(dateModel)) {
                 dateModel.isSelected = true;
               } else {
@@ -143,15 +139,14 @@ class _MonthViewState extends State<MonthView>
           }
           dateModel.isCanClick =
               configuration.itemCanClick?.call(dateModel) ?? true;
+          //这里使用objectKey，保证可以刷新。原因1：跟flutter的刷新机制有关。
+          // 原因2：statefulElement持有state。
           return ItemContainer(
             dateModel: dateModel,
             key: ObjectKey(dateModel),
             clickCall: () {
               setState(() {});
-
-              /// 如果是选择开始和结束则进行刷新日历
             },
-            //这里使用objectKey，保证可以刷新。原因1：跟flutter的刷新机制有关。原因2：statefulElement持有state。
           );
         });
   }
@@ -189,6 +184,7 @@ class ItemContainerState extends State<ItemContainer> {
   }
 
   /// 提供方法给外部，可以调用这个方法进行刷新item
+  // ignore: avoid_positional_boolean_parameters
   void refreshItem(bool v) {
     /**
         Exception caught by gesture
@@ -207,13 +203,13 @@ class ItemContainerState extends State<ItemContainer> {
     }
   }
 
-  void notifiCationUnCalendarSelect(DateModel element) {
+  void notifyCationUnCalendarSelect(DateModel element) {
     if (configuration.unCalendarSelect != null) {
       configuration.unCalendarSelect(element);
     }
   }
 
-  void notifiCationCalendarSelect(DateModel element) {
+  void notifyCationCalendarSelect(DateModel element) {
     if (configuration.calendarSelect != null) {
       configuration.calendarSelect(element);
     }

@@ -36,7 +36,7 @@ class CalendarConfiguration {
 
   DateModel selectDateModel; //默认被选中的item，用于单选
   int maxMultiSelectCount; //多选，最多选多少个
-  Map<DateModel, dynamic> extraDataMap = Map(); //自定义额外的数据
+  Map<DateModel, dynamic> extraDataMap = {}; //自定义额外的数据
 
   /// UI绘制方面的绘制
   double itemSize; //默认是屏幕宽度/7
@@ -62,7 +62,7 @@ class CalendarConfiguration {
       ObserverList<OnMonthChange>(); //保存多个月份监听的事件
 
   /// 下面的信息不是配置的，是根据配置信息进行计算出来的
-  List<DateModel> monthList = new List(); //月份list
+  List<DateModel> monthList =  []; //月份list
   PageController monthController; //月份的controller
   DateModel minSelectDate;
   DateModel maxSelectDate;
@@ -96,9 +96,4 @@ class CalendarConfiguration {
     this.margin,
     this.offset = 0,
   });
-
-  @override
-  String toString() {
-    return 'CalendarConfiguration{selectMode: $selectMode, minYear: $minYear, maxYear: $maxYear, minYearMonth: $minYearMonth, maxYearMonth: $maxYearMonth, nowYear: $nowYear, nowMonth: $nowMonth, nowDay: $nowDay, minSelectYear: $minSelectYear, minSelectMonth: $minSelectMonth, minSelectDay: $minSelectDay, maxSelectYear: $maxSelectYear, maxSelectMonth: $maxSelectMonth, maxSelectDay: $maxSelectDay, selectDateModel: $selectDateModel, maxMultiSelectCount: $maxMultiSelectCount, extraDataMap: $extraDataMap, itemSize: $itemSize, verticalSpacing: $verticalSpacing, boxDecoration: $boxDecoration, padding: $padding, margin: $margin, dayWidgetBuilder: $dayWidgetBuilder, weekBarItemWidgetBuilder: $weekBarItemWidgetBuilder, itemCanClick: $itemCanClick, calendarSelect: $calendarSelect, unCalendarSelect: $unCalendarSelect, onMultiSelect: $onMultiSelect, multiSelectOutOfRange: $multiSelectOutOfRange, multiSelectOutOfSize: $multiSelectOutOfSize, monthChangeListeners: $monthChangeListeners, monthList: $monthList, monthController: $monthController, minSelectDate: $minSelectDate, maxSelectDate: $maxSelectDate, offset: $offset}';
-  }
 }

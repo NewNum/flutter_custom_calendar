@@ -1,5 +1,4 @@
-import 'package:flutter_custom_calendar/flutter_custom_calendar.dart';
-import 'LogUtil.dart';
+import '../flutter_custom_calendar.dart';
 
 /// 工具类
 class DateUtil {
@@ -29,7 +28,7 @@ class DateUtil {
   /// @param month 月
   /// @return 某月的天数
   static int getMonthDaysCount(int year, int month) {
-    int count = 0;
+    var count = 0;
     //判断大月份
     if (month == 1 ||
         month == 3 ||
@@ -59,7 +58,7 @@ class DateUtil {
 
   /// 是否是今天
   static bool isCurrentDay(int year, int month, int day) {
-    DateTime now = DateTime.now();
+    var now = DateTime.now();
     return now.year == year && now.month == month && now.day == day;
   }
 
@@ -75,18 +74,18 @@ class DateUtil {
 
   /// 本月的第几周
   static int getIndexWeekInMonth(DateTime dateTime) {
-    DateTime firstDayInMonth = new DateTime(dateTime.year, dateTime.month, 1);
-    Duration duration = dateTime.difference(firstDayInMonth);
+    var firstDayInMonth =  DateTime(dateTime.year, dateTime.month, 1);
+    var duration = dateTime.difference(firstDayInMonth);
     return duration.inDays ~/ 7 + 1;
   }
 
   /// 本周的第几天
   static int getIndexDayInWeek(DateTime dateTime) {
-    DateTime firstDayInMonth = new DateTime(
+    var firstDayInMonth =  DateTime(
       dateTime.year,
       dateTime.month,
     );
-    Duration duration = dateTime.difference(firstDayInMonth);
+    var duration = dateTime.difference(firstDayInMonth);
     return duration.inDays ~/ 7 + 1;
   }
 
@@ -94,9 +93,9 @@ class DateUtil {
   /// @return 获取日期所在月视图对应的起始偏移量 the start diff with MonthView
 
   static int getIndexOfFirstDayInMonth(DateTime dateTime, {int offset = 0}) {
-    DateTime firstDayOfMonth = new DateTime(dateTime.year, dateTime.month, 1);
+    var firstDayOfMonth =  DateTime(dateTime.year, dateTime.month, 1);
 
-    int week = firstDayOfMonth.weekday + offset;
+    var week = firstDayOfMonth.weekday + offset;
 
     return week;
   }
@@ -114,17 +113,17 @@ class DateUtil {
     print('initCalendarForMonthView start');
     weekStart = DateTime.monday;
     //获取月视图真实偏移量
-    int mPreDiff =
-        getIndexOfFirstDayInMonth(new DateTime(year, month), offset: offset);
+    var mPreDiff =
+        getIndexOfFirstDayInMonth( DateTime(year, month), offset: offset);
     //获取该月的天数
-    int monthDayCount = getMonthDaysCount(year, month);
-    List<DateModel> result = new List();
-    int size = 42;
+    var monthDayCount = getMonthDaysCount(year, month);
+    var result =  <DateModel>[];
+    var size = 42;
 
-    DateTime firstDayOfMonth = new DateTime(year, month, 1);
-    DateTime lastDayOfMonth = new DateTime(year, month, monthDayCount);
+    var firstDayOfMonth =  DateTime(year, month, 1);
+    var lastDayOfMonth =  DateTime(year, month, monthDayCount);
 
-    for (int i = 0; i < size; i++) {
+    for (var i = 0; i < size; i++) {
       DateTime temp;
       DateModel dateModel;
       if (i < mPreDiff - 1) {
@@ -146,7 +145,7 @@ class DateUtil {
         dateModel.isCurrentMonth = false;
       } else {
         //这个月的
-        temp = new DateTime(year, month, i - mPreDiff + 2);
+        temp =  DateTime(year, month, i - mPreDiff + 2);
         dateModel = DateModel.fromDateTime(temp);
         dateModel.isCurrentMonth = true;
       }
@@ -179,14 +178,11 @@ class DateUtil {
 
   /// 月的行数
   static int getMonthViewLineCount(int year, int month, int offset) {
-    DateTime firstDayOfMonth = new DateTime(year, month, 1);
-    int monthDayCount = getMonthDaysCount(year, month);
+    var firstDayOfMonth =  DateTime(year, month, 1);
+    var monthDayCount = getMonthDaysCount(year, month);
 
-    int preIndex = (firstDayOfMonth.weekday - 1 + offset) % 7;
-    int lineCount = ((preIndex + monthDayCount) / 7).ceil();
-    LogUtil.log(
-        tag: "DateUtil",
-        message: "getMonthViewLineCount:$year年$month月:有$lineCount行");
+    var preIndex = (firstDayOfMonth.weekday - 1 + offset) % 7;
+    var lineCount = ((preIndex + monthDayCount) / 7).ceil();
 
     return lineCount;
   }
@@ -198,15 +194,15 @@ class DateUtil {
       DateModel maxSelectDate,
       Map<DateModel, dynamic> extraDataMap,
       int offset = 0,}) {
-    List<DateModel> items = List();
+    var items = <DateModel>[];
 
-    int weekDay = currentDate.weekday + offset;
+    var weekDay = currentDate.weekday + offset;
 
     //计算本周的第一天
-    DateTime firstDayOfWeek = currentDate.add(Duration(days: -weekDay));
+    var firstDayOfWeek = currentDate.add(Duration(days: -weekDay));
 
-    for (int i = 1; i <= 7; i++) {
-      DateModel dateModel =
+    for (var i = 1; i <= 7; i++) {
+      var dateModel =
           DateModel.fromDateTime(firstDayOfWeek.add(Duration(days: i)));
 
       //判断是否在范围内

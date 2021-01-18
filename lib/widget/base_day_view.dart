@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_custom_calendar/model/date_model.dart';
-import 'package:flutter_custom_calendar/flutter_custom_calendar.dart';
 
 import '../controller.dart';
+import '../flutter_custom_calendar.dart';
+import '../model/date_model.dart';
 
 /// 通过canvas自定义item，只需实现相关的方法就可以
 
@@ -16,13 +16,13 @@ abstract class BaseCustomDayWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: new CustomPaint(
+      child:  CustomPaint(
         painter:
             //根据isSelected标志获取对应的item
             dateModel.isSelected
-                ? new CustomDayWidgetPainter(dateModel,
+                ?  CustomDayWidgetPainter(dateModel,
                     drawDayWidget: drawSelected)
-                : new CustomDayWidgetPainter(dateModel,
+                :  CustomDayWidgetPainter(dateModel,
                     drawDayWidget: drawNormal),
       ),
     );

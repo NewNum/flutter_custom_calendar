@@ -10,13 +10,13 @@ class CacheData {
 
   static CacheData get instance => _instance;
 
-  Map<DateModel, List<DateModel>> monthListCache = Map();
+  Map<DateModel, List<DateModel>> monthListCache = {};
 
-  Map<DateModel, List<DateModel>> weekListCache = Map();
+  Map<DateModel, List<DateModel>> weekListCache = {};
 
   static CacheData getInstance() {
     if (_instance == null) {
-      _instance = new CacheData._();
+      _instance =  CacheData._();
     }
     return _instance;
   }

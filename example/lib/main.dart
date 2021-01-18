@@ -45,15 +45,15 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   CalendarController controller;
   CalendarViewWidget calendar;
-  HashSet<DateTime> _selectedDate = new HashSet();
-  HashSet<DateModel> _selectedModels = new HashSet();
-  GlobalKey<CalendarContainerState> _globalKey = new GlobalKey();
+  HashSet<DateTime> _selectedDate =  HashSet();
+  HashSet<DateModel> _selectedModels =  HashSet();
+  GlobalKey<CalendarContainerState> _globalKey =  GlobalKey();
 
   @override
   void initState() {
     var startDateTime = DateTime.now();
     var endDateTime = DateUtil.getAfterMonthLastDay(2, startDateTime);
-    controller = new CalendarController(
+    controller =  CalendarController(
       minYear: startDateTime.year,
       minYearMonth: startDateTime.month,
       maxYear: endDateTime.year,
@@ -64,15 +64,15 @@ class _MyHomePageState extends State<MyHomePage> {
       ..addMonthChangeListener((year, month) {
         context.read<DateViewModel>().setDate(year, month);
       })
-      ..addOnCalendarSelectListener((dateModel) {
+      ..calendarConfiguration.calendarSelect = (dateModel) {
         _selectedModels.add(dateModel);
-      })
-      ..addOnCalendarUnSelectListener((dateModel) {
+      }
+      ..calendarConfiguration.unCalendarSelect = (dateModel) {
         if (_selectedModels.contains(dateModel)) {
           _selectedModels.remove(dateModel);
         }
-      });
-    calendar = new CalendarViewWidget(
+      };
+    calendar =  CalendarViewWidget(
       key: _globalKey,
       calendarController: controller,
       verticalSpacing: 0,
@@ -180,11 +180,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   setState(() {
                     controller.calendarConfiguration.selectMode =
-                        CalendarSelectedMode.mutltiStartToEndSelect;
+                        CalendarSelectedMode.multiStartToEndSelect;
                   });
                 },
                 color: controller.calendarConfiguration.selectMode ==
-                        CalendarSelectedMode.mutltiStartToEndSelect
+                        CalendarSelectedMode.multiStartToEndSelect
                     ? Colors.teal
                     : Colors.black38,
               ),

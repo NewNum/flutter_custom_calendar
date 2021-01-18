@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_custom_calendar/calendar_provider.dart';
-import 'package:flutter_custom_calendar/controller.dart';
-import 'package:flutter_custom_calendar/utils/LogUtil.dart';
-import 'package:flutter_custom_calendar/utils/date_util.dart';
-import 'package:flutter_custom_calendar/widget/month_view_pager.dart';
 import 'package:provider/provider.dart';
+
+import '../calendar_provider.dart';
+import '../controller.dart';
+import '../utils/date_util.dart';
+import 'month_view_pager.dart';
 
 /// 暂时默认是周一开始的
 
@@ -117,18 +117,15 @@ class CalendarContainerState extends State<CalendarContainer>
 
     widget.calendarController.addMonthChangeListener((year, month) {
       //月份切换的时候，如果高度发生变化的话，需要setState使高度整体自适应
-      int lineCount = DateUtil.getMonthViewLineCount(
+      var lineCount = DateUtil.getMonthViewLineCount(
           year, month, widget.calendarController.calendarConfiguration.offset);
-      double newHeight = itemHeight * (lineCount) +
+      var height = itemHeight * (lineCount) +
           calendarProvider.calendarConfiguration.verticalSpacing *
               (lineCount - 1);
-      LogUtil.log(
-          tag: this.runtimeType,
-          message: "totalHeight:$totalHeight,newHeight:$newHeight");
-      if (totalHeight.toInt() != newHeight.toInt()) {
-        LogUtil.log(tag: this.runtimeType, message: "月份视图高度发生变化");
+
+      if (totalHeight.toInt() != height.toInt()) {
         setState(() {
-          totalHeight = newHeight;
+          totalHeight = height;
         });
       }
     });
@@ -138,16 +135,10 @@ class CalendarContainerState extends State<CalendarContainer>
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    LogUtil.log(tag: this.runtimeType, message: "CalendarContainerState build");
     return Container(
       width: itemHeight * 7,
-      child: new Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[

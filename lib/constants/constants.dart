@@ -1,17 +1,17 @@
-enum CalendarSelectedMode { singleSelect, multiSelect, mutltiStartToEndSelect }
+enum CalendarSelectedMode { singleSelect, multiSelect, multiStartToEndSelect }
 class CalendarConstants {
   /// 单选
-  static const int MODE_SINGLE_SELECT = 1;
+  static const int modeSingleSelect = 1;
 
   /// 多选
-  static const int MODE_MULTI_SELECT = 2;
+  static const int modeMultiSelect = 2;
 
   /// 选择开始和结束 中间的自动选择
-  static const int MODE_MULTI_SELECT_START_TO_END = 3;
+  static const int modeMultiSelectStartToEnd = 3;
 
 
   /// 一周七天
-  static const List<String> WEEK_LIST = [
+  static const List<String> weekList = [
     "日",
     "一",
     "二",
@@ -22,8 +22,8 @@ class CalendarConstants {
   ];
 
   /// 农历的月份
-  static const List<String> LUNAR_MONTH_TEXT = [
-    "春节",
+  static const List<String> lunarMonthText = [
+    "正月",
     "二月",
     "三月",
     "四月",
@@ -38,7 +38,7 @@ class CalendarConstants {
   ];
 
   ///   农历的日期
-  static const List<String> LUNAR_DAY_TEXT = [
+  static const List<String> lunarDayText = [
     "初一",
     "初二",
     "初三",

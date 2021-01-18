@@ -42,7 +42,7 @@ class OnlyOnePointerRecognizerWidget extends StatelessWidget {
         OnlyOnePointerRecognizer:
             GestureRecognizerFactoryWithHandlers<OnlyOnePointerRecognizer>(
           () => OnlyOnePointerRecognizer(),
-          (OnlyOnePointerRecognizer instance) {},
+          (_) {},
         ),
       },
       child: child,

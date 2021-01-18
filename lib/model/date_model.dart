@@ -1,8 +1,7 @@
-import 'package:flutter_custom_calendar/utils/date_util.dart';
-import 'package:flutter_custom_calendar/utils/lunar_util.dart';
+import '../utils/date_util.dart';
+import '../utils/lunar_util.dart';
 
 /// 日期的实体类
-
 class DateModel {
   int year;
   int month;
@@ -75,16 +74,16 @@ class DateModel {
 
   //转化成DateTime格式
   DateTime getDateTime() {
-    return new DateTime(year, month, day);
+    return  DateTime(year, month, day);
   }
 
   //根据DateTime创建对应的model，并初始化农历和传统节日等信息
   static DateModel fromDateTime(DateTime dateTime) {
-    DateModel dateModel = new DateModel()
+    var dateModel =  DateModel()
       ..year = dateTime.year
       ..month = dateTime.month
       ..day = dateTime.day;
-    List<int> lunar =
+    var lunar =
         LunarUtil.solarToLunar(dateModel.year, dateModel.month, dateModel.day);
     dateModel.lunar = lunar;
 
@@ -94,6 +93,7 @@ class DateModel {
   }
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is DateModel &&
@@ -103,6 +103,7 @@ class DateModel {
           day == other.day;
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode => year.hashCode ^ month.hashCode ^ day.hashCode;
 
   //是否是同一天
@@ -114,22 +115,11 @@ class DateModel {
 
   //是否在某天之后
   bool isAfter(DateModel dateModel) {
-    return this.getDateTime().isAfter(dateModel.getDateTime());
+    return getDateTime().isAfter(dateModel.getDateTime());
   }
 
   //是否在某天之前
   bool isBefore(DateModel dateModel) {
-    return this.getDateTime().isBefore(dateModel.getDateTime());
-  }
-}
-
-class X {
-  var _y;
-
-  get y => null == _y ? initY() : _y;
-
-  initY() {
-    //do some computation
-    _y = "result";
+    return getDateTime().isBefore(dateModel.getDateTime());
   }
 }
