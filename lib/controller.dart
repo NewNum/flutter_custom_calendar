@@ -44,7 +44,6 @@ class CalendarController {
     int maxMultiSelectCount = 9999,
     Map<DateModel, dynamic> extraDataMap = EMPTY_MAP,
     int offset = 1, // 首日偏移量
-    OnItemClick onItemClick = defaultOnItemClick, // 首日偏移量
   }) {
     assert(offset >= 0 && offset <= 6);
     LogUtil.log(TAG: this.runtimeType, message: "init CalendarConfiguration");
@@ -73,11 +72,11 @@ class CalendarController {
       maxMultiSelectCount: maxMultiSelectCount,
       selectDateModel: selectDateModel,
       offset: offset,
-      onItemClick: onItemClick,
     );
 
     //将默认选中的数据，放到provider中
-    calendarProvider.selectDateModel = selectDateModel;
+    calendarProvider.selectDateModel =
+        selectDateModel ?? DateModel.fromDateTime(DateTime.now());
 
     calendarConfiguration.minSelectDate = DateModel.fromDateTime(DateTime(
         calendarConfiguration.minSelectYear,
@@ -98,6 +97,7 @@ class CalendarController {
           maxYearMonth,
         ))}");
     _weekAndMonthViewChange();
+    addOnItemClickListener(defaultOnItemClick);
   }
 
   void _weekAndMonthViewChange() {
@@ -142,6 +142,11 @@ class CalendarController {
 
     calendarConfiguration.monthList = monthList;
     calendarConfiguration.monthController = monthController;
+  }
+
+  //item点击监听
+  void addOnItemClickListener(OnItemClick listener) {
+    this.calendarConfiguration.onItemClick = listener;
   }
 
   //月份切换监听
@@ -349,7 +354,6 @@ class CalendarController {
   void clearData() {
     monthList.clear();
     calendarProvider.clearData();
-    calendarConfiguration.weekChangeListeners = null;
     calendarConfiguration.monthChangeListeners = null;
   }
 }
@@ -390,13 +394,6 @@ void defaultOnItemClick(
   DateModel dateModel,
   CalendarProvider calendarProvider,
 ) {
-  if (!configuration.itemCanClick(dateModel)) {
-    return;
-  }
-  //范围外不可点击
-  if (!dateModel.isInRange) {
-    return;
-  }
   print('244 周视图的变化: $dateModel');
   calendarProvider.lastClickDateModel = dateModel;
 

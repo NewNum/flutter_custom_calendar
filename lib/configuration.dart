@@ -49,9 +49,9 @@ class CalendarConfiguration {
   DayWidgetBuilder dayWidgetBuilder; //创建日历item
   WeekBarItemWidgetBuilder weekBarItemWidgetBuilder; //创建顶部的weekbar
   CanClick itemCanClick; //控制item是否可点击
-  OnItemClick onItemClick;//item点击事件处理
   /// 监听变化
   //各种事件回调
+  OnItemClick onItemClick;//item点击事件处理
   OnCalendarSelect calendarSelect; //点击选择事件
   OnCalendarSelect unCalendarSelect; //点击取消选择事件
   OnMultiSelect onMultiSelect; //多选点击结束回调
@@ -60,11 +60,8 @@ class CalendarConfiguration {
 
   ObserverList<OnMonthChange> monthChangeListeners =
       ObserverList<OnMonthChange>(); //保存多个月份监听的事件
-  ObserverList<OnWeekChange> weekChangeListeners =
-      ObserverList<OnWeekChange>(); //周视图切换
 
   /// 下面的信息不是配置的，是根据配置信息进行计算出来的
-
   List<DateModel> monthList = new List(); //月份list
   PageController monthController; //月份的controller
   DateModel minSelectDate;
@@ -98,11 +95,10 @@ class CalendarConfiguration {
     this.padding,
     this.margin,
     this.offset = 0,
-    this.onItemClick
   });
 
   @override
   String toString() {
-    return 'CalendarConfiguration{selectMode: $selectMode, minYear: $minYear, maxYear: $maxYear, minYearMonth: $minYearMonth, maxYearMonth: $maxYearMonth, nowYear: $nowYear, nowMonth: $nowMonth, nowDay: $nowDay, minSelectYear: $minSelectYear, minSelectMonth: $minSelectMonth, minSelectDay: $minSelectDay, maxSelectYear: $maxSelectYear, maxSelectMonth: $maxSelectMonth, maxSelectDay: $maxSelectDay, selectDateModel: $selectDateModel, maxMultiSelectCount: $maxMultiSelectCount, extraDataMap: $extraDataMap, itemSize: $itemSize, verticalSpacing: $verticalSpacing, boxDecoration: $boxDecoration, padding: $padding, margin: $margin, dayWidgetBuilder: $dayWidgetBuilder, weekBarItemWidgetBuilder: $weekBarItemWidgetBuilder, itemCanClick: $itemCanClick, calendarSelect: $calendarSelect, unCalendarSelect: $unCalendarSelect, onMultiSelect: $onMultiSelect, multiSelectOutOfRange: $multiSelectOutOfRange, multiSelectOutOfSize: $multiSelectOutOfSize, monthChangeListeners: $monthChangeListeners, weekChangeListeners: $weekChangeListeners, monthList: $monthList, monthController: $monthController, minSelectDate: $minSelectDate, maxSelectDate: $maxSelectDate, offset: $offset}';
+    return 'CalendarConfiguration{selectMode: $selectMode, minYear: $minYear, maxYear: $maxYear, minYearMonth: $minYearMonth, maxYearMonth: $maxYearMonth, nowYear: $nowYear, nowMonth: $nowMonth, nowDay: $nowDay, minSelectYear: $minSelectYear, minSelectMonth: $minSelectMonth, minSelectDay: $minSelectDay, maxSelectYear: $maxSelectYear, maxSelectMonth: $maxSelectMonth, maxSelectDay: $maxSelectDay, selectDateModel: $selectDateModel, maxMultiSelectCount: $maxMultiSelectCount, extraDataMap: $extraDataMap, itemSize: $itemSize, verticalSpacing: $verticalSpacing, boxDecoration: $boxDecoration, padding: $padding, margin: $margin, dayWidgetBuilder: $dayWidgetBuilder, weekBarItemWidgetBuilder: $weekBarItemWidgetBuilder, itemCanClick: $itemCanClick, calendarSelect: $calendarSelect, unCalendarSelect: $unCalendarSelect, onMultiSelect: $onMultiSelect, multiSelectOutOfRange: $multiSelectOutOfRange, multiSelectOutOfSize: $multiSelectOutOfSize, monthChangeListeners: $monthChangeListeners, monthList: $monthList, monthController: $monthController, minSelectDate: $minSelectDate, maxSelectDate: $maxSelectDate, offset: $offset}';
   }
 }
