@@ -46,7 +46,7 @@ class CalendarController {
     int offset = 1, // 首日偏移量
   }) {
     assert(offset >= 0 && offset <= 6);
-    LogUtil.log(TAG: this.runtimeType, message: "init CalendarConfiguration");
+    LogUtil.log(tag: this.runtimeType, message: "init CalendarConfiguration");
     //如果没有指定当前月份和年份，默认是当年时间
     if (nowYear == null) {
       nowYear = DateTime.now().year;
@@ -88,7 +88,7 @@ class CalendarController {
         calendarConfiguration.maxSelectDay));
 
     LogUtil.log(
-        TAG: this.runtimeType,
+        tag: this.runtimeType,
         message: "start:${DateModel.fromDateTime(DateTime(
           minYear,
           minYearMonth,
@@ -101,13 +101,13 @@ class CalendarController {
   }
 
   void _weekAndMonthViewChange() {
-    int minYear = calendarConfiguration.minYear;
-    int maxYear = calendarConfiguration.maxYear;
-    int minYearMonth = calendarConfiguration.minYearMonth;
-    int maxYearMonth = calendarConfiguration.maxYearMonth;
-    int nowYear = calendarConfiguration.nowYear;
-    int nowMonth = calendarConfiguration.nowMonth;
-    int nowDay = calendarConfiguration.selectDateModel?.day ?? -1;
+    var minYear = calendarConfiguration.minYear;
+    var maxYear = calendarConfiguration.maxYear;
+    var minYearMonth = calendarConfiguration.minYearMonth;
+    var maxYearMonth = calendarConfiguration.maxYearMonth;
+    var nowYear = calendarConfiguration.nowYear;
+    var nowMonth = calendarConfiguration.nowMonth;
+    //var nowDay = calendarConfiguration.selectDateModel?.day ?? -1;
 
     //初始化pageController,initialPage默认是当前时间对于的页面
     int initialPage = 0;
@@ -136,7 +136,7 @@ class CalendarController {
         new PageController(initialPage: initialPage, keepPage: true);
 
     LogUtil.log(
-        TAG: this.runtimeType,
+        tag: this.runtimeType,
         message:
             "初始化月份视图的信息:一共有${monthList.length}个月，initialPage为$nowMonthIndex");
 
@@ -306,7 +306,7 @@ class CalendarController {
     if ((calendarProvider.calendarConfiguration.monthController.page.toInt() +
             1) >=
         monthList.length) {
-      LogUtil.log(TAG: this.runtimeType, message: "moveToNextMonth：当前是最后一个月份");
+      LogUtil.log(tag: this.runtimeType, message: "moveToNextMonth：当前是最后一个月份");
       return;
     }
     DateTime targetDateTime = monthList[calendarProvider
@@ -327,7 +327,7 @@ class CalendarController {
     if ((calendarProvider.calendarConfiguration.monthController.page.toInt()) ==
         0) {
       LogUtil.log(
-          TAG: this.runtimeType, message: "moveToPreviousMonth：当前是第一个月份");
+          tag: this.runtimeType, message: "moveToPreviousMonth：当前是第一个月份");
       return;
     }
     DateTime targetDateTime = monthList[calendarProvider

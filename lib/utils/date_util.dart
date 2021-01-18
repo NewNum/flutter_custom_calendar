@@ -102,11 +102,15 @@ class DateUtil {
   }
 
   static List<DateModel> initCalendarForMonthView(
-      int year, int month, DateTime currentDate, int weekStart,
-      {DateModel minSelectDate,
-      DateModel maxSelectDate,
-      Map<DateModel, Object> extraDataMap,
-      int offset = 0}) {
+    int year,
+    int month,
+    DateTime currentDate,
+    int weekStart, {
+    DateModel minSelectDate,
+    DateModel maxSelectDate,
+    Map<DateModel, dynamic> extraDataMap,
+    int offset = 0,
+  }) {
     print('initCalendarForMonthView start');
     weekStart = DateTime.monday;
     //获取月视图真实偏移量
@@ -114,14 +118,7 @@ class DateUtil {
         getIndexOfFirstDayInMonth(new DateTime(year, month), offset: offset);
     //获取该月的天数
     int monthDayCount = getMonthDaysCount(year, month);
-
-    LogUtil.log(
-        TAG: "DateUtil",
-        message:
-            "initCalendarForMonthView:$year年$month月,有$monthDayCount天,第一天的index为$mPreDiff");
-
     List<DateModel> result = new List();
-
     int size = 42;
 
     DateTime firstDayOfMonth = new DateTime(year, month, 1);
@@ -188,7 +185,7 @@ class DateUtil {
     int preIndex = (firstDayOfMonth.weekday - 1 + offset) % 7;
     int lineCount = ((preIndex + monthDayCount) / 7).ceil();
     LogUtil.log(
-        TAG: "DateUtil",
+        tag: "DateUtil",
         message: "getMonthViewLineCount:$year年$month月:有$lineCount行");
 
     return lineCount;
@@ -199,8 +196,8 @@ class DateUtil {
       int year, int month, DateTime currentDate, int weekStart,
       {DateModel minSelectDate,
       DateModel maxSelectDate,
-      Map<DateModel, Object> extraDataMap,
-      int offset = 0}) {
+      Map<DateModel, dynamic> extraDataMap,
+      int offset = 0,}) {
     List<DateModel> items = List();
 
     int weekDay = currentDate.weekday + offset;

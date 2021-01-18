@@ -1,8 +1,6 @@
 import 'package:flutter_custom_calendar/utils/date_util.dart';
 import 'package:flutter_custom_calendar/utils/lunar_util.dart';
 
-import 'unavailable_bean.dart';
-
 /// 日期的实体类
 
 class DateModel {
@@ -37,7 +35,7 @@ class DateModel {
 
   //公历节日
   String get gregorianFestival {
-    String result = LunarUtil.gregorianFestival(month, day);
+    var result = LunarUtil.gregorianFestival(month, day);
     if (result?.isNotEmpty == true) {
       return result;
     }
@@ -54,8 +52,7 @@ class DateModel {
 
   bool isInRange = false; //是否在范围内,比如可以实现在某个范围外，设置置灰的功能
   bool isSelected = false; //是否被选中，用来实现一些标记或者选择功能
-  bool isCanClick =
-      true; //todo:是否可点击：设置范围外的日历不可点击，或者可以通过自定义拦截点击事件来设置true或者false
+  bool isCanClick = true; //是否可点击,可以通过自定义拦截点击事件来设置true或者false
   //是否是周末
   bool get isWeekend => DateUtil.isWeekend(getDateTime());
 

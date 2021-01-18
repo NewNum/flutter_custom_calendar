@@ -12,9 +12,9 @@ class LogUtil {
 
   /// TAG:类名
   /// message：一般就方法名+自定义信息吧
-  static void log({@required dynamic TAG, String message = ""}) {
+  static void log({@required dynamic tag, String message = ""}) {
     if (_enableLog && kDebugMode) {
-      debugPrint("flutter_custom_calendar------$TAG------>$message");
+      debugPrint("flutter_custom_calendar------$tag------>$message");
     }
   }
 }

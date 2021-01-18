@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 import '../flutter_custom_calendar.dart';
 
 ///顶部的固定的周显示
-
-/// 顶部的固定的周显示
-
 class DefaultWeekBar extends StatelessWidget {
   const DefaultWeekBar({Key key}) : super(key: key);
 

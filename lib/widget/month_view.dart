@@ -39,21 +39,15 @@ class _MonthViewState extends State<MonthView>
     super.initState();
     extraDataMap = widget.configuration.extraDataMap;
     DateModel firstDayOfMonth =
-    DateModel.fromDateTime(DateTime(widget.year, widget.month, 1));
-    if (CacheData
-        .getInstance()
-        .monthListCache[firstDayOfMonth]?.isNotEmpty ==
+        DateModel.fromDateTime(DateTime(widget.year, widget.month, 1));
+    if (CacheData.getInstance().monthListCache[firstDayOfMonth]?.isNotEmpty ==
         true) {
-      LogUtil.log(TAG: this.runtimeType, message: "缓存中有数据");
-      items = CacheData
-          .getInstance()
-          .monthListCache[firstDayOfMonth];
+      LogUtil.log(tag: this.runtimeType, message: "缓存中有数据");
+      items = CacheData.getInstance().monthListCache[firstDayOfMonth];
     } else {
-      LogUtil.log(TAG: this.runtimeType, message: "缓存中无数据");
+      LogUtil.log(tag: this.runtimeType, message: "缓存中无数据");
       getItems().then((_) {
-        CacheData
-            .getInstance()
-            .monthListCache[firstDayOfMonth] = items;
+        CacheData.getInstance().monthListCache[firstDayOfMonth] = items;
       });
     }
 
@@ -62,8 +56,7 @@ class _MonthViewState extends State<MonthView>
 
     //第一帧后,添加监听，generation发生变化后，需要刷新整个日历
     WidgetsBinding.instance.addPostFrameCallback((callback) {
-      Provider
-          .of<CalendarProvider>(context, listen: false)
+      Provider.of<CalendarProvider>(context, listen: false)
           .generation
           .addListener(() async {
         extraDataMap = widget.configuration.extraDataMap;
@@ -83,22 +76,27 @@ class _MonthViewState extends State<MonthView>
     setState(() {});
   }
 
-  static Future<List<DateModel>> initCalendarForMonthView(Map map) async {
+  static Future<List<DateModel>> initCalendarForMonthView(
+      Map<String, dynamic> map) async {
     return DateUtil.initCalendarForMonthView(
-        map['year'], map['month'], DateTime.now(), DateTime.sunday,
-        minSelectDate: map['minSelectDate'],
-        maxSelectDate: map['maxSelectDate'],
-        extraDataMap: map['extraDataMap'],
-        offset: map['offset']);
+      map['year'] as int,
+      map['month'] as int ,
+      DateTime.now(),
+      DateTime.sunday,
+      minSelectDate: map['minSelectDate'] as DateModel,
+      maxSelectDate: map['maxSelectDate'] as DateModel,
+      extraDataMap: map['extraDataMap'] as Map<DateModel, dynamic>,
+      offset: map['offset'] as int,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    LogUtil.log(TAG: this.runtimeType, message: "_MonthViewState build");
+    LogUtil.log(tag: this.runtimeType, message: "_MonthViewState build");
 
     CalendarProvider calendarProvider =
-    Provider.of<CalendarProvider>(context, listen: false);
+        Provider.of<CalendarProvider>(context, listen: false);
     CalendarConfiguration configuration =
         calendarProvider.calendarConfiguration;
 
@@ -116,7 +114,7 @@ class _MonthViewState extends State<MonthView>
           //判断是否被选择
           switch (configuration.selectMode) {
 
-          /// 多选
+            /// 多选
             case CalendarSelectedMode.multiSelect:
               if (calendarProvider.selectedDateList.contains(dateModel)) {
                 dateModel.isSelected = true;
@@ -125,7 +123,7 @@ class _MonthViewState extends State<MonthView>
               }
               break;
 
-          /// 选择开始和结束 中间的自动选择
+            /// 选择开始和结束 中间的自动选择
             case CalendarSelectedMode.mutltiStartToEndSelect:
               if (calendarProvider.selectedDateList.contains(dateModel)) {
                 dateModel.isSelected = true;
@@ -134,7 +132,7 @@ class _MonthViewState extends State<MonthView>
               }
               break;
 
-          /// 单选
+            /// 单选
             case CalendarSelectedMode.singleSelect:
               if (calendarProvider.selectDateModel == dateModel) {
                 dateModel.isSelected = true;

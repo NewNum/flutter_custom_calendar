@@ -123,10 +123,10 @@ class CalendarContainerState extends State<CalendarContainer>
           calendarProvider.calendarConfiguration.verticalSpacing *
               (lineCount - 1);
       LogUtil.log(
-          TAG: this.runtimeType,
+          tag: this.runtimeType,
           message: "totalHeight:$totalHeight,newHeight:$newHeight");
       if (totalHeight.toInt() != newHeight.toInt()) {
-        LogUtil.log(TAG: this.runtimeType, message: "月份视图高度发生变化");
+        LogUtil.log(tag: this.runtimeType, message: "月份视图高度发生变化");
         setState(() {
           totalHeight = newHeight;
         });
@@ -144,7 +144,7 @@ class CalendarContainerState extends State<CalendarContainer>
 
   @override
   Widget build(BuildContext context) {
-    LogUtil.log(TAG: this.runtimeType, message: "CalendarContainerState build");
+    LogUtil.log(tag: this.runtimeType, message: "CalendarContainerState build");
     return Container(
       width: itemHeight * 7,
       child: new Column(

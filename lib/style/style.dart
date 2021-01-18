@@ -18,4 +18,4 @@ TextStyle lunarTextStyle = new TextStyle(color: Colors.grey, fontSize: 12);
 TextStyle notCurrentMonthTextStyle =
     new TextStyle(color: Colors.grey, fontSize: 16);
 
-TextStyle currentDayTextStyle = new TextStyle(color: Colors.red, fontSize: 16);
+TextStyle currentDayTextStyle = TextStyle(color: Colors.red, fontSize: 16);

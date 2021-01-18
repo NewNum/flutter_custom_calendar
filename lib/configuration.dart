@@ -36,7 +36,7 @@ class CalendarConfiguration {
 
   DateModel selectDateModel; //默认被选中的item，用于单选
   int maxMultiSelectCount; //多选，最多选多少个
-  Map<DateModel, dynamic> extraDataMap = new Map(); //自定义额外的数据
+  Map<DateModel, dynamic> extraDataMap = Map(); //自定义额外的数据
 
   /// UI绘制方面的绘制
   double itemSize; //默认是屏幕宽度/7
@@ -47,7 +47,7 @@ class CalendarConfiguration {
 
   //支持自定义绘制
   DayWidgetBuilder dayWidgetBuilder; //创建日历item
-  WeekBarItemWidgetBuilder weekBarItemWidgetBuilder; //创建顶部的weekbar
+  WeekBarItemWidgetBuilder weekBarItemWidgetBuilder; //创建顶部的weekBar
   CanClick itemCanClick; //控制item是否可点击
   /// 监听变化
   //各种事件回调

@@ -13,29 +13,17 @@ import 'model/date_model.dart';
 /// 目前的情况：只需要获取状态，不需要监听rebuild
 
 class CalendarProvider extends ChangeNotifier {
-  double _totalHeight; //当前月视图的整体高度
+  double totalHeight; //当前月视图的整体高度
   HashSet<DateModel> selectedDateList = new HashSet<DateModel>(); //临时保存多选被选中的日期
   DateModel _selectDateModel; //当前选中的日期，用于单选
   ItemContainerState lastClickItemState;
   DateModel _lastClickDateModel;
 
-  double get totalHeight => _totalHeight;
-
-  ValueNotifier<int> _generation =
+  ValueNotifier<int> generation =
       new ValueNotifier(0); //生成的int值，每次变化，都会刷新整个日历。
 
-  ValueNotifier<int> get generation => _generation;
-
-  set generation(ValueNotifier<int> value) {
-    _generation = value;
-  }
-
-  set totalHeight(double value) {
-    _totalHeight = value;
-  }
-
   changeTotalHeight(double value) {
-    _totalHeight = value;
+    totalHeight = value;
     notifyListeners();
   }
 
@@ -52,7 +40,7 @@ class CalendarProvider extends ChangeNotifier {
   set selectDateModel(DateModel value) {
     _selectDateModel = value;
     LogUtil.log(
-        TAG: this.runtimeType,
+        tag: this.runtimeType,
         message: "selectDateModel change:$selectDateModel");
 //    notifyListeners();
   }
@@ -96,7 +84,7 @@ class CalendarProvider extends ChangeNotifier {
     WeekBarItemWidgetBuilder weekBarItemWidgetBuilder,
     CanClick itemCanClick,
   }) {
-    LogUtil.log(TAG: this.runtimeType, message: "CalendarProvider initData");
+    LogUtil.log(tag: this.runtimeType, message: "CalendarProvider initData");
     this.calendarConfiguration = calendarConfiguration;
     this.selectDateModel = this.calendarConfiguration.selectDateModel;
     this.calendarConfiguration.padding = padding;
@@ -141,7 +129,7 @@ class CalendarProvider extends ChangeNotifier {
 
   //退出的时候，清除数据
   void clearData() {
-    LogUtil.log(TAG: this.runtimeType, message: "CalendarProvider clearData");
+    LogUtil.log(tag: this.runtimeType, message: "CalendarProvider clearData");
     CacheData.getInstance().clearData();
     selectDateModel = null;
     calendarConfiguration = null;

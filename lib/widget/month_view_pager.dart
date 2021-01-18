@@ -22,7 +22,7 @@ class _MonthViewPagerState extends State<MonthViewPager>
   @override
   void initState() {
     super.initState();
-    LogUtil.log(TAG: this.runtimeType, message: "MonthViewPager initState");
+    LogUtil.log(tag: this.runtimeType, message: "MonthViewPager initState");
 
     calendarProvider = Provider.of<CalendarProvider>(context, listen: false);
 
@@ -48,14 +48,14 @@ class _MonthViewPagerState extends State<MonthViewPager>
 
   @override
   void dispose() {
-    LogUtil.log(TAG: this.runtimeType, message: "MonthViewPager dispose");
+    LogUtil.log(tag: this.runtimeType, message: "MonthViewPager dispose");
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    LogUtil.log(TAG: this.runtimeType, message: "MonthViewPager build");
+    LogUtil.log(tag: this.runtimeType, message: "MonthViewPager build");
 //    获取到当前的CalendarProvider对象,设置listen为false，不需要刷新
     calendarProvider = Provider.of<CalendarProvider>(context, listen: false);
     CalendarConfiguration configuration =
