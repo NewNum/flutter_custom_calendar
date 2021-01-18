@@ -1,22 +1,15 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_custom_calendar/flutter_custom_calendar.dart';
 import 'LogUtil.dart';
 
-/**
- * 工具类
- */
+/// 工具类
 class DateUtil {
-  /**
-   * 判断一个日期是否是周末，即周六日
-   */
+  /// 判断一个日期是否是周末，即周六日
   static bool isWeekend(DateTime dateTime) {
     return dateTime.weekday == DateTime.saturday ||
         dateTime.weekday == DateTime.sunday;
   }
 
-  /**
-   * 获取某年的天数
-   */
+  /// 获取某年的天数
   static int getYearDaysCount(int year) {
     if (isLeapYear(year)) {
       return 366;
@@ -24,13 +17,17 @@ class DateUtil {
     return 365;
   }
 
-  /**
-   * 获取某月的天数
-   *
-   * @param year  年
-   * @param month 月
-   * @return 某月的天数
-   */
+  static DateTime getAfterMonthLastDay(int monthCount, DateTime dateTime) {
+    var temp = DateTime(dateTime.year, dateTime.month + monthCount);
+    return DateTime(
+        temp.year, temp.month, getMonthDaysCount(temp.year, temp.month));
+  }
+
+  /// 获取某月的天数
+  ///
+  /// @param year  年
+  /// @param month 月
+  /// @return 某月的天数
   static int getMonthDaysCount(int year, int month) {
     int count = 0;
     //判断大月份
@@ -60,40 +57,37 @@ class DateUtil {
     return count;
   }
 
-  /**
-   * 是否是今天
-   */
+  /// 是否是今天
   static bool isCurrentDay(int year, int month, int day) {
     DateTime now = DateTime.now();
     return now.year == year && now.month == month && now.day == day;
   }
 
-  /**
-   * 是否是闰年
-   */
+  /// 是否是今天
+  static bool isToday(DateTime dateTime) {
+    return isCurrentDay(dateTime.year, dateTime.month, dateTime.day);
+  }
+
+  /// 是否是闰年
   static bool isLeapYear(int year) {
     return ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
   }
 
-  /**
-   * 本月的第几周
-   */
+  /// 本月的第几周
   static int getIndexWeekInMonth(DateTime dateTime) {
-    DateTime firstdayInMonth = new DateTime(dateTime.year, dateTime.month, 1);
-    Duration duration = dateTime.difference(firstdayInMonth);
-    return (duration.inDays / 7).toInt() + 1;
+    DateTime firstDayInMonth = new DateTime(dateTime.year, dateTime.month, 1);
+    Duration duration = dateTime.difference(firstDayInMonth);
+    return duration.inDays ~/ 7 + 1;
   }
 
-  /**
-   * 本周的第几天
-   */
+  /// 本周的第几天
   static int getIndexDayInWeek(DateTime dateTime) {
-    DateTime firstdayInMonth = new DateTime(
+    DateTime firstDayInMonth = new DateTime(
       dateTime.year,
       dateTime.month,
     );
-    Duration duration = dateTime.difference(firstdayInMonth);
-    return (duration.inDays / 7).toInt() + 1;
+    Duration duration = dateTime.difference(firstDayInMonth);
+    return duration.inDays ~/ 7 + 1;
   }
 
   /// 本月第一天，是那一周的第几天,从1开始
@@ -124,7 +118,7 @@ class DateUtil {
     LogUtil.log(
         TAG: "DateUtil",
         message:
-            "initCalendarForMonthView:$year年$month月,有$monthDayCount天,第一天的index为${mPreDiff}");
+            "initCalendarForMonthView:$year年$month月,有$monthDayCount天,第一天的index为$mPreDiff");
 
     List<DateModel> result = new List();
 
@@ -186,9 +180,7 @@ class DateUtil {
     return result;
   }
 
-  /**
-   * 月的行数
-   */
+  /// 月的行数
   static int getMonthViewLineCount(int year, int month, int offset) {
     DateTime firstDayOfMonth = new DateTime(year, month, 1);
     int monthDayCount = getMonthDaysCount(year, month);
@@ -202,9 +194,7 @@ class DateUtil {
     return lineCount;
   }
 
-  /**
-   * 获取本周的7个item
-   */
+  /// 获取本周的7个item
   static List<DateModel> initCalendarForWeekView(
       int year, int month, DateTime currentDate, int weekStart,
       {DateModel minSelectDate,

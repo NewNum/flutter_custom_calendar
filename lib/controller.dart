@@ -43,7 +43,7 @@ class CalendarController {
     DateModel selectDateModel, //单选模式下，默认选中的item
     int maxMultiSelectCount = 9999,
     Map<DateModel, dynamic> extraDataMap = EMPTY_MAP,
-    int offset = 0, // 首日偏移量
+    int offset = 1, // 首日偏移量
     OnItemClick onItemClick = defaultOnItemClick, // 首日偏移量
   }) {
     assert(offset >= 0 && offset <= 6);

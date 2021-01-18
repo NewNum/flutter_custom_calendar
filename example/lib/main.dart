@@ -1,15 +1,13 @@
 import 'dart:collection';
 
-import 'package:example/date_time_util.dart';
 import 'package:example/date_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_calendar/constants/constants.dart';
 import 'package:flutter_custom_calendar/controller.dart';
 import 'package:flutter_custom_calendar/flutter_custom_calendar.dart';
+import 'package:flutter_custom_calendar/utils/date_util.dart';
 import 'package:provider/provider.dart';
-
-import 'week_bar_widget.dart';
 
 void main() {
   runApp(MyApp());
@@ -54,16 +52,14 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     var startDateTime = DateTime.now();
-    var endDateTime = DateTimeUtil.getAfterMonthLastDay(2, startDateTime);
+    var endDateTime = DateUtil.getAfterMonthLastDay(2, startDateTime);
     controller = new CalendarController(
       minYear: startDateTime.year,
       minYearMonth: startDateTime.month,
       maxYear: endDateTime.year,
       maxYearMonth: endDateTime.month,
       selectedDateTimeList: _selectedDate,
-      offset: 1,
       selectMode: CalendarSelectedMode.singleSelect,
-      onItemClick: (_,__,___,____){}
     )
       ..addMonthChangeListener((year, month) {
         context.read<DateViewModel>().setDate(year, month);
@@ -78,17 +74,16 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     calendar = new CalendarViewWidget(
       key: _globalKey,
-      weekBarItemWidgetBuilder: () => WeekBarWidget(),
       calendarController: controller,
       verticalSpacing: 0,
       itemCanClick: (model) {
         var dateTime = DateTime(model.year, model.month, model.day);
-        return isToday(dateTime) ||
+        return DateUtil.isToday(dateTime) ||
             (model.day != 0 && DateTime.now().isBefore(dateTime));
       },
       dayWidgetBuilder: (DateModel model) {
         var modelDateTime = DateTime(model.year, model.month, model.day);
-        var today = isToday(modelDateTime);
+        var today = DateUtil.isToday(modelDateTime);
         return ColoredBox(
           color: model.isSelected ? Colors.red : Colors.white,
           child: Center(
@@ -133,12 +128,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  bool isToday(DateTime dateTime) {
-    var now = DateTime.now();
-    return now.year == dateTime.year &&
-        now.month == dateTime.month &&
-        now.day == dateTime.day;
-  }
 
   Widget _topButtons() {
     return SliverToBoxAdapter(
