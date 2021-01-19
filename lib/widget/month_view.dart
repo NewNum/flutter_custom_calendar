@@ -29,7 +29,7 @@ class MonthView extends StatefulWidget {
 
 class _MonthViewState extends State<MonthView>
     with AutomaticKeepAliveClientMixin {
-  List<DateModel> _items = List(42);
+  List<DateModel> _items =[];
 
   int lineCount;
   Map<DateModel, dynamic> extraDataMap; //自定义额外的数据
