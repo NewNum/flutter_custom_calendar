@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:example/calendar_view_model.dart';
+import 'package:example/utils/colors_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_calendar/constants/constants.dart';
@@ -46,25 +47,72 @@ class MyHomePage extends StatelessWidget {
   }
 
   Widget _body(BuildContext context) {
-    return CupertinoScrollbar(
-      child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: _ModelSwitchTab(),
-          ),
-          SliverToBoxAdapter(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(context.watch<CalendarViewModel>().getDate()),
-              ],
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: WKCalendarWidget(),
-          ),
-        ],
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: _ModelSwitchTab(),
+        ),
+        SliverToBoxAdapter(
+          child: _CalendarTitle(context.watch<CalendarViewModel>()),
+        ),
+        SliverToBoxAdapter(
+          child: WKCalendarWidget(),
+        ),
+      ],
+    );
+  }
+}
+
+class _CalendarTitle extends StatelessWidget {
+  final CalendarViewModel viewModel;
+
+  _CalendarTitle(this.viewModel);
+
+  @override
+  Widget build(BuildContext context) {
+    var empty = IconButton(
+      icon: ColoredBox(color: Colors.transparent),
+      onPressed: () {},
+    );
+    var children = <Widget>[];
+    if (viewModel.havePreviousPage) {
+      children.add(IconButton(
+        icon: Image.asset(
+          "images/no_rent_left.png",
+          width: 7,
+          height: 12,
+        ),
+        onPressed: () =>
+            context.read<CalendarViewModel>().calendarToLeft.value++,
+      ));
+    } else {
+      children.add(empty);
+    }
+    children.add(Text(
+      viewModel.getDate(),
+      style: TextStyle(
+        fontSize: 17,
+        color: WKColors.hex222222,
       ),
+    ));
+    if (viewModel.haveNextPage) {
+      children.add(
+        IconButton(
+          onPressed: () =>
+              context.read<CalendarViewModel>().calendarToRight.value++,
+          icon: Image.asset(
+            "images/no_rent_right.png",
+            width: 7,
+            height: 12,
+          ),
+        ),
+      );
+    } else {
+      children.add(empty);
+    }
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: children,
     );
   }
 }
@@ -72,59 +120,60 @@ class MyHomePage extends StatelessWidget {
 class _ModelSwitchTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var isSingle = context.watch<CalendarViewModel>().selectMode ==
-        CalendarSelectedMode.singleSelect;
+    var selectMode = context.watch<CalendarViewModel>().selectMode;
+    CalendarSelectedMode.singleSelect;
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 15, horizontal: 50),
+      margin: EdgeInsets.only(top: 15, left: 50, right: 50, bottom: 5),
       width: double.minPositive,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                context.read<CalendarViewModel>().selectMode =
-                    CalendarSelectedMode.singleSelect;
-              },
-              child: ColoredBox(
-                  color: isSingle ? Colors.red : Colors.transparent,
-                  child: Center(
-                    child: Text(
-                      '单选',
-                      style: TextStyle(
-                        color: isSingle ? Colors.white : Colors.red,
-                      ),
-                    ),
-                  )),
-            ),
+          _newTab(
+            context,
+            '按天设置',
+            selectMode,
+            CalendarSelectedMode.singleSelect,
           ),
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                context.read<CalendarViewModel>().selectMode =
-                    CalendarSelectedMode.multiStartToEndSelect;
-              },
-              child: ColoredBox(
-                color: isSingle ? Colors.transparent : Colors.red,
-                child: Center(
-                  child: Text(
-                    '多选',
-                    style: TextStyle(
-                      color: isSingle ? Colors.red : Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+          _newTab(
+            context,
+            '批量设置',
+            selectMode,
+            CalendarSelectedMode.multiStartToEndSelect,
           ),
         ],
       ),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: Colors.red, width: 1), //边框
-        borderRadius: BorderRadius.all(
-          //圆角
-          Radius.circular(3.0),
+        border: Border.all(color: WKColors.hexCB2A1E, width: 1),
+        borderRadius: BorderRadius.all(Radius.circular(3.0)),
+      ),
+    );
+  }
+
+  Widget _newTab(
+    BuildContext context,
+    String text,
+    CalendarSelectedMode selectedMode,
+    CalendarSelectedMode targetMode,
+  ) {
+    var isSelect = selectedMode == targetMode;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          context.read<CalendarViewModel>().selectMode = targetMode;
+        },
+        child: Container(
+          color: isSelect ? WKColors.hexCB2A1E : Colors.transparent,
+          padding: EdgeInsets.symmetric(vertical: 5),
+          child: Center(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 12,
+                color: isSelect ? Colors.white : WKColors.hexCB2A1E,
+              ),
+            ),
+          ),
         ),
       ),
     );

@@ -65,7 +65,7 @@ class _MonthViewPagerState extends State<MonthViewPager>
         //月份的变化
         var dateModel = configuration.monthList[position];
         for (var listener in configuration.monthChangeListeners) {
-          listener.call(dateModel.year, dateModel.month);
+          listener.call(dateModel.year, dateModel.month,position);
         }
       },
       controller: configuration.monthController,

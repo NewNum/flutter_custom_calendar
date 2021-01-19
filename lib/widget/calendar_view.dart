@@ -115,7 +115,7 @@ class CalendarContainerState extends State<CalendarContainer>
     widgets.add(const MonthViewPager());
     index = 0;
 
-    widget.calendarController.addMonthChangeListener((year, month) {
+    widget.calendarController.addMonthChangeListener((year, month, position) {
       //月份切换的时候，如果高度发生变化的话，需要setState使高度整体自适应
       var lineCount = DateUtil.getMonthViewLineCount(
           year, month, widget.calendarController.calendarConfiguration.offset);

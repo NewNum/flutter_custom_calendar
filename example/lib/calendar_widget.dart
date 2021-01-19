@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 
 import 'calendar_view_model.dart';
 
-
 class WKCalendarWidget extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _WKCalendarWidgetState();
@@ -32,8 +31,11 @@ class _WKCalendarWidgetState extends State<WKCalendarWidget> {
       selectedDateTimeList: _selectedDate,
       selectMode: CalendarSelectedMode.singleSelect,
     )
-      ..addMonthChangeListener((year, month) {
-        context.read()<CalendarViewModel>().setDate(year, month);
+      ..addMonthChangeListener((year, month, position) {
+        var read = context.read<CalendarViewModel>();
+        read.haveNextPage = position < controller.dataLength() - 1;
+        read.havePreviousPage = position > 0;
+        read.setDate(year, month);
       })
       ..calendarConfiguration.calendarSelect = _selectedModels.add
       ..calendarConfiguration.unCalendarSelect = (dateModel) {
@@ -71,6 +73,16 @@ class _WKCalendarWidgetState extends State<WKCalendarWidget> {
         );
       },
     );
+    Provider.of<CalendarViewModel>(context, listen: false)
+        .calendarToLeft
+        .addListener(() {
+      controller.previousPage();
+    });
+    Provider.of<CalendarViewModel>(context, listen: false)
+        .calendarToRight
+        .addListener(() {
+      controller.nextPage();
+    });
     super.initState();
   }
 

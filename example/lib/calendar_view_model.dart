@@ -8,6 +8,14 @@ class CalendarViewModel extends ChangeNotifier {
 
   CalendarSelectedMode _mode = CalendarSelectedMode.singleSelect;
 
+  ValueNotifier<int> calendarToLeft = ValueNotifier(0);
+
+  ValueNotifier<int> calendarToRight = ValueNotifier(0);
+
+  bool haveNextPage = true;
+
+  bool havePreviousPage = false;
+
   CalendarViewModel(this._year, this._month);
 
   set selectMode(CalendarSelectedMode mode) {
@@ -23,5 +31,5 @@ class CalendarViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String getDate() => "$_month月 $_year";
+  String getDate() => "$_year年 $_month月";
 }

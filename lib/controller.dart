@@ -9,11 +9,8 @@ import 'widget/default_custom_day_view.dart';
 import 'widget/default_week_bar.dart';
 import 'widget/month_view.dart';
 
-/// 周视图切换
-typedef OnWeekChange = void Function(int year, int month);
-
 /// 月份切换事件
-typedef OnMonthChange = void Function(int year, int month);
+typedef OnMonthChange = void Function(int year, int month, int position);
 
 /// 日期选择事件
 typedef OnCalendarSelect = void Function(DateModel dateModel);
@@ -129,7 +126,6 @@ class CalendarController {
         calendarConfiguration.maxSelectMonth,
         calendarConfiguration.maxSelectDay));
 
-
     _weekAndMonthViewChange();
     calendarConfiguration.onItemClick = defaultOnItemClick;
   }
@@ -168,7 +164,6 @@ class CalendarController {
     }
     monthController = PageController(initialPage: initialPage, keepPage: true);
 
-
     calendarConfiguration.monthList = monthList;
     calendarConfiguration.monthController = monthController;
   }
@@ -202,8 +197,8 @@ class CalendarController {
           .previousPage(duration: defaultDuration, curve: Curves.ease);
       for (var listener
           in calendarProvider.calendarConfiguration.monthChangeListeners) {
-        listener.call(monthList[currentIndex - 1].year,
-            monthList[currentIndex - 1].month);
+        var index = currentIndex - 1;
+        listener.call(monthList[index].year, monthList[index].month, index);
       }
       ;
       var temp = DateModel();
@@ -230,8 +225,8 @@ class CalendarController {
           .nextPage(duration: defaultDuration, curve: Curves.ease);
       for (var listener
           in calendarProvider.calendarConfiguration.monthChangeListeners) {
-        listener.call(monthList[currentIndex + 1].year,
-            monthList[currentIndex + 1].month);
+        var index = currentIndex + 1;
+        listener.call(monthList[index].year, monthList[index].month, index);
       }
 
       var temp = DateModel();
@@ -242,6 +237,10 @@ class CalendarController {
       calendarProvider.lastClickDateModel = temp;
       return true;
     }
+  }
+
+  int dataLength() {
+    return monthList?.length ?? 0;
   }
 
   //跳转到指定日期
